@@ -5,18 +5,18 @@ namespace AOC.Solver
 {
     public static class Day1
     {
-        public static int SolvePart1(string input)
+        public static int SolvePart1(string[] input)
         {
-            return input.Split(", ")
+            return input
                 .Select(int.Parse)
                 .Aggregate((acc, cur) => acc + cur);
         }
 
-        public static int SolvePart2(string input)
+        public static int SolvePart2(string[] input)
         {
             int current = 0, index = 0;
             var history = new List<int> { 0 };
-            var sequence = input.Split(", ").Select(int.Parse).ToArray();
+            var sequence = input.Select(int.Parse).ToArray();
             while (true)
             {
                 var n = sequence[index % sequence.Length];

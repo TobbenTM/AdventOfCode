@@ -8,14 +8,14 @@ namespace AOC.Runner
         [Fact]
         public void Part1()
         {
-            var result = Day3.SolvePart1(Input);
+            var result = Day3.SolvePart1(_input);
             Assert.Equal(120419, result);
         }
 
         [Fact]
         public void Part2()
         {
-            var result = Day3.SolvePart2(Input);
+            var result = Day3.SolvePart2(_input);
             Assert.Equal(445, result);
         }
 
@@ -63,7 +63,7 @@ namespace AOC.Runner
             Assert.False(b.Intersects(a));
         }
 
-        private readonly string[] Input =
+        private readonly string[] _input =
         {
             "#1 @ 520,746: 4x20",
             "#2 @ 274,680: 19x26",

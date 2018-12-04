@@ -5,7 +5,21 @@ namespace AOC.Runner
 {
     public class Day2Tests
     {
-        private readonly string[] Input = {
+        [Fact]
+        public void Part1()
+        {
+            var result = Day2.SolvePart1(_input);
+            Assert.Equal(6422, result);
+        }
+
+        [Fact]
+        public void Part2()
+        {
+            var result = Day2.SolvePart2(_input);
+            Assert.Equal("qcslyvphgkrmdawljuefotxbh", result);
+        }
+
+        private readonly string[] _input = {
             "qcsnyvpigkxmrdawlfdefotxbh",
             "qcsnyvligkymrdawljujfotxbh",
             "qmsnyvpigkzmrnawzjuefotxbh",
@@ -257,19 +271,5 @@ namespace AOC.Runner
             "qcsnyvpigkacrdawtjuefotxbh",
             "qcsnyvpigkzmylawlquefotxbh"
         };
-
-        [Fact]
-        public void Part1()
-        {
-            var result = Day2.SolvePart1(Input);
-            Assert.Equal(6422, result);
-        }
-
-        [Fact]
-        public void Part2()
-        {
-            var result = Day2.SolvePart2(Input);
-            Assert.Equal("qcslyvphgkrmdawljuefotxbh", result);
-        }
     }
 }
