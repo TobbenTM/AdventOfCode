@@ -23,7 +23,7 @@ namespace AOC.Runner
         [Fact]
         public void ShouldParseWakeUpEvent()
         {
-            var input = "[1518-08-21 00:39] wakes up";
+            const string input = "[1518-08-21 00:39] wakes up";
             var result = Day4.GuardEvent.ParseEvent(input);
             Assert.Equal(Day4.GuardEventType.WakesUp, result.EventType);
             Assert.Equal(new DateTime(1518, 8, 21, 0, 39, 0), result.Timestamp);
@@ -32,7 +32,7 @@ namespace AOC.Runner
         [Fact]
         public void ShouldParseFallsAsleepEvent()
         {
-            var input = "[1518-06-16 00:41] falls asleep";
+            const string input = "[1518-06-16 00:41] falls asleep";
             var result = Day4.GuardEvent.ParseEvent(input);
             Assert.Equal(Day4.GuardEventType.FallsAsleep, result.EventType);
             Assert.Equal(new DateTime(1518, 6, 16, 0, 41, 0), result.Timestamp);
@@ -41,7 +41,7 @@ namespace AOC.Runner
         [Fact]
         public void ShouldParseStartsShiftEvent()
         {
-            var input = "[1518-10-10 23:52] Guard #2707 begins shift";
+            const string input = "[1518-10-10 23:52] Guard #2707 begins shift";
             var result = Day4.GuardEvent.ParseEvent(input);
             Assert.Equal(2707, result.GuardId);
             Assert.Equal(Day4.GuardEventType.StartsShift, result.EventType);
