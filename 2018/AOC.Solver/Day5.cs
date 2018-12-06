@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AOC.Solver
@@ -18,14 +19,21 @@ namespace AOC.Solver
 
         public static int SolvePart2(string input)
         {
+            var sw = Stopwatch.StartNew();
             var polymer = input
                 .ToCharArray()
                 .ToList();
+            var t1 = sw.ElapsedMilliseconds;
             var unitTypes = polymer.Select(char.ToLower).Distinct();
+            var t2 = sw.ElapsedMilliseconds;
             var mutations = unitTypes.Select(t => polymer.Where(c => c != t && c != char.ToUpper(t)));
+            var t3 = sw.ElapsedMilliseconds;
             var results = mutations.Select(p => p.ToList().React());
+            var t4 = sw.ElapsedMilliseconds;
+            var best = results.AsParallel().Min(p => p.Count);
+            var t5 = sw.ElapsedMilliseconds;
 
-            return results.Min(p => p.Count);
+            return best;
         }
 
         private static List<char> React(this List<char> polymer)
