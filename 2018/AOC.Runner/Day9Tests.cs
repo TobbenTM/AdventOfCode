@@ -23,7 +23,7 @@ namespace AOC.Runner
         {
             var game = new MarbleGame(_players, _lastMarble * 100);
             game.Play();
-            Assert.Equal((ulong)0, game.LeadingPlayer.score);
+            Assert.Equal((ulong)3350093681, game.LeadingPlayer.score);
         }
 
         [Theory]
