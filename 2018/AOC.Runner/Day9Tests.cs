@@ -7,18 +7,23 @@ namespace AOC.Runner
 {
     public class Day9Tests
     {
+        private const int _players = 431;
+        private const int _lastMarble = 70950;
+
         [Fact]
         public void Part1()
         {
-            var result = Day9.SolvePart1(_players, _lastMarble);
-            Assert.Equal(404611, result);
+            var game = new MarbleGame(_players, _lastMarble);
+            game.Play();
+            Assert.Equal((ulong)404611, game.LeadingPlayer.score);
         }
 
         [Fact]
         public void Part2()
         {
-            var result = Day9.SolvePart1(_players, _lastMarble * 100);
-            Assert.Equal(0, result);
+            var game = new MarbleGame(_players, _lastMarble * 100);
+            game.Play();
+            Assert.Equal((ulong)0, game.LeadingPlayer.score);
         }
 
         [Theory]
@@ -27,14 +32,11 @@ namespace AOC.Runner
         [InlineData(17, 1104, 2764)]
         [InlineData(21, 6111, 54718)]
         [InlineData(30, 5807, 37305)]
-        public void GameShouldPlay(int players, int lastMarble, int expectedScore)
+        public void GameShouldPlay(int players, int lastMarble, ulong expectedScore)
         {
             var game = new MarbleGame(players, lastMarble);
             game.Play();
             Assert.Equal(expectedScore, game.LeadingPlayer.score);
         }
-        
-        private const int _players = 431;
-        private const int _lastMarble = 70950;
     }
 }

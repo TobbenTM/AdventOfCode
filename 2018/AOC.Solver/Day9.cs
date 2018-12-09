@@ -9,36 +9,24 @@ namespace AOC.Solver
 {
     public static class Day9
     {
-        public static int SolvePart1(int players, int lastMarble)
-        {
-            var game = new MarbleGame(players, lastMarble);
-            game.Play();
-            var winner = game.LeadingPlayer;
-            return winner.score;
-        }
-
-        public static int SolvePart2(int players, int lastMarble)
-        {
-            throw new NotImplementedException();
-        }
-
         public class MarbleGame
         {
             private readonly int _lastMarbleScore;
-            private readonly List<int> _marbles;
-            private readonly int[] _players;
+            private readonly LinkedList<int> _marbles;
+            private readonly ulong[] _players;
             private int _currentMarbleScore = 0;
-            private int _currentMarblePosition = 0;
             private int _currentPlayer = 0;
+            private LinkedListNode<int> _currentMarble;
 
             public MarbleGame(int numberOfPlayers, int lastMarbleScore)
             {
                 _lastMarbleScore = lastMarbleScore;
-                _marbles = new List<int>(lastMarbleScore + 1){ 0 };
-                _players = new int[numberOfPlayers];
+                _marbles = new LinkedList<int>(new []{ 0 });
+                _currentMarble = _marbles.First;
+                _players = new ulong[numberOfPlayers];
             }
 
-            public (int player, int score) LeadingPlayer => (Array.IndexOf(_players, _players.Max()), _players.Max());
+            public (int player, ulong score) LeadingPlayer => (Array.IndexOf(_players, _players.Max()), _players.Max());
 
             public void Play()
             {
@@ -55,37 +43,35 @@ namespace AOC.Solver
 
                 if (_currentMarbleScore % 23 == 0)
                 {
-                    _players[_currentPlayer] += _currentMarbleScore;
-                    _currentMarblePosition -= 7;
-                    if (_currentMarblePosition < 0)
+                    _players[_currentPlayer] += (ulong)_currentMarbleScore;
+                    for (var i = 0; i < 7; i++)
                     {
-                        _currentMarblePosition += _marbles.Count;
+                        if (_currentMarble.Previous == null)
+                        {
+                            _currentMarble = _marbles.Last;
+                        }
+                        else
+                        {
+                            _currentMarble = _currentMarble.Previous;
+                        }
                     }
-                    _players[_currentPlayer] += _marbles[_currentMarblePosition];
-                    _marbles.RemoveAt(_currentMarblePosition);
+                    var deletedMarble = _currentMarble;
+                    _currentMarble = deletedMarble.Next;
+                    _players[_currentPlayer] += (ulong)deletedMarble.Value;
+                    _marbles.Remove(deletedMarble);
                 }
                 else
                 {
-                    int nextPosition;
-                    if (_marbles.Count == 1)
+                    if (_currentMarble.Next == null)
                     {
-                        nextPosition = 1;
+                        _currentMarble = _marbles.First;
                     }
                     else
                     {
-                        nextPosition = (_currentMarblePosition + 2) % _marbles.Count;
+                        _currentMarble = _currentMarble.Next;
                     }
 
-                    if (nextPosition == 0)
-                    {
-                        _marbles.Add(_currentMarbleScore);
-                        _currentMarblePosition = _marbles.Count - 1;
-                    }
-                    else
-                    {
-                        _marbles.Insert(nextPosition, _currentMarbleScore);
-                        _currentMarblePosition = nextPosition;
-                    }
+                    _currentMarble = _marbles.AddAfter(_currentMarble, _currentMarbleScore);
                 }
                 
                 _currentPlayer = (_currentPlayer + 1) % _players.Length;
