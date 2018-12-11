@@ -25,7 +25,7 @@ namespace AOC.Runner
         {
             var grid = new PowerGrid(300, 300, Input);
             var best = await grid.EvaluateBestDynamicLocation();
-            Assert.Equal((0, 0, 0), best);
+            Assert.Equal((236, 268, 11), best);
         }
 
         [Theory]
