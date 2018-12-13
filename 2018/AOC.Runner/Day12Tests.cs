@@ -66,21 +66,41 @@ namespace AOC.Runner
             Assert.Equal(3059, plants.SumPlants);
         }
 
-        [Fact(Skip = "Takes too long, need to optimize or find alternative solution")]
+        [Fact]
         public void Part2()
         {
-            var sw = Stopwatch.StartNew();
             var plants = new PlantGeneration(_initialState, _rules);
             var targetGeneration = 50000000000;
+
+            var lastCycleGrowth = 0L;
+            var lastCycle = plants.SumPlants;
+            var stagnatedCycles = 0;
+
             while (plants.Generation < targetGeneration)
             {
-                if (plants.Generation % 10000 == 0)
-                {
-                    Debug.WriteLine($"Reached evolution {plants.Generation} in {sw.ElapsedMilliseconds} ms! ({(100 / targetGeneration) * plants.Generation}% done)");
-                }
                 plants = plants.Evolve();
+                var tmpSum = plants.SumPlants;
+                var tmpDiff = tmpSum - lastCycle;
+                if (tmpDiff == lastCycleGrowth)
+                {
+                    if (stagnatedCycles >= 5)
+                    {
+                        // Stagnated
+                        break;
+                    }
+                    stagnatedCycles += 1;
+                }
+                else
+                {
+                    stagnatedCycles = 0;
+                }
+                lastCycle = tmpSum;
+                lastCycleGrowth = tmpDiff;
             }
-            Assert.Equal(0, plants.SumPlants);
+
+            var remainingGenerations = targetGeneration - plants.Generation;
+            var result = plants.SumPlants + (remainingGenerations * lastCycleGrowth);
+            Assert.Equal(0L, result);
         }
     }
 }

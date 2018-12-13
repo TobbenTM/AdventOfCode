@@ -36,22 +36,17 @@ namespace AOC.Solver
 
             public PlantGeneration Evolve()
             {
-                var sw = Stopwatch.StartNew();
                 var newGeneration = new Dictionary<long, char>();
 
                 // We need to start 2 spaces to the left of the first plant and to the right of the last
                 var startIndex = _state.First(kv => kv.Value == '#').Key - 2;
                 var endIndex = _state.Last(kv => kv.Value == '#').Key + 2;
 
-                var t1 = sw.ElapsedMilliseconds;
-
                 for (var i = startIndex; i < endIndex; i++)
                 {
                     var evolvedState = _rules[BuildArea(i, _state)];
                     newGeneration[i] = evolvedState;
                 }
-
-                var t2 = sw.ElapsedMilliseconds;
 
                 return new PlantGeneration(_generation + 1, newGeneration, _rules);
             }
