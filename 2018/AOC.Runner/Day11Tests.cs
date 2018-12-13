@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AOC.Solver;
 using Xunit;
 using static AOC.Solver.Day11;
-using static AOC.Solver.Day9;
 
 namespace AOC.Runner
 {
