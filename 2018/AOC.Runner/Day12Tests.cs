@@ -100,7 +100,7 @@ namespace AOC.Runner
 
             var remainingGenerations = targetGeneration - plants.Generation;
             var result = plants.SumPlants + (remainingGenerations * lastCycleGrowth);
-            Assert.Equal(0L, result);
+            Assert.Equal(3650000001776L, result);
         }
     }
 }
