@@ -15,5 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\AOC.Solver\AOC.Solver.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="*.Input" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>
