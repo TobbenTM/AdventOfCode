@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace AOC.Solver
 {
     public static class Day00

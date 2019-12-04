@@ -10,7 +10,8 @@ namespace AOC.Runner
         [InlineData(14, 2)]
         [InlineData(1969, 654)]
         [InlineData(100756, 33583)]
-        public void CalculateFuel(int mass, int fuel) {
+        public void CalculateFuel(int mass, int fuel)
+        {
             Assert.Equal(fuel, Day01.CalculateFuel(mass));
         }
 
@@ -18,7 +19,8 @@ namespace AOC.Runner
         [InlineData(12, 2)]
         [InlineData(1969, 966)]
         [InlineData(100756, 50346)]
-        public void CalculateFuelReccurring(int mass, int fuel) {
+        public void CalculateFuelReccurring(int mass, int fuel)
+        {
             Assert.Equal(fuel, Day01.CalculateFuelReccurring(mass));
         }
 
