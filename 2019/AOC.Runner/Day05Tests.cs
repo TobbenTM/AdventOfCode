@@ -1,4 +1,3 @@
-using System.Linq;
 using AOC.Solver;
 using Xunit;
 
@@ -18,53 +17,6 @@ namespace AOC.Runner
         {
             var result = Day05.SolvePart2(_input, 5);
             Assert.Equal(12077198, result);
-        }
-
-        [Fact]
-        public void ShouldRunSmallerPrograms()
-        {
-            var ex1 = new[] { 3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8 };
-            var ex2 = new[] { 3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8 };
-            var stack = ex1.ToArray();
-            Assert.Equal(0, Day05.Compute(ref stack, 0).Last());
-            stack = ex1.ToArray();
-            Assert.Equal(1, Day05.Compute(ref stack, 8).Last());
-            stack = ex2.ToArray();
-            Assert.Equal(1, Day05.Compute(ref stack, 6).Last());
-            stack = ex2.ToArray();
-            Assert.Equal(0, Day05.Compute(ref stack, 8).Last());
-        }
-
-        [Fact]
-        public void ShouldRunJumpProgram1()
-        {
-            var program = new[] { 3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9 };
-            var stack = program.ToArray();
-            Assert.Equal(0, Day05.Compute(ref stack, 0).Last());
-            stack = program.ToArray();
-            Assert.Equal(1, Day05.Compute(ref stack, 1).Last());
-        }
-
-        [Fact]
-        public void ShouldRunJumpProgram2()
-        {
-            var program = new[] { 3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1 };
-            var stack = program.ToArray();
-            Assert.Equal(0, Day05.Compute(ref stack, 0).Last());
-            stack = program.ToArray();
-            Assert.Equal(1, Day05.Compute(ref stack, 1).Last());
-        }
-
-        [Fact]
-        public void ShouldRunLargerProgram()
-        {
-            var program = new[] { 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99 };
-            var stack = program.ToArray();
-            Assert.Equal(999, Day05.Compute(ref stack, 6).Last());
-            stack = program.ToArray();
-            Assert.Equal(1000, Day05.Compute(ref stack, 8).Last());
-            stack = program.ToArray();
-            Assert.Equal(1001, Day05.Compute(ref stack, 10).Last());
         }
 
         private readonly int[] _input =

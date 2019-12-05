@@ -9,7 +9,7 @@ namespace AOC.Solver
             input[1] = 12;
             input[2] = 2;
 
-            Compute(ref input);
+            IntcodeComputer.Compute(ref input);
 
             return input[0];
         }
@@ -23,7 +23,7 @@ namespace AOC.Solver
                     var stack = input.ToArray();
                     stack[1] = noun;
                     stack[2] = verb;
-                    Compute(ref stack);
+                    IntcodeComputer.Compute(ref stack);
                     if (stack[0] == target)
                     {
                         return 100 * noun + verb;
@@ -31,32 +31,6 @@ namespace AOC.Solver
                 }
             }
             return 0;
-        }
-
-        public static void Compute(ref int[] stack)
-        {
-            for (var i = 0; i < stack.Length;)
-            {
-                var op = stack[i];
-                switch (op)
-                {
-                    case 1:
-                        var a1 = stack[stack[i + 1]];
-                        var b1 = stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a1 + b1;
-                        break;
-
-                    case 2:
-                        var a2 = stack[stack[i + 1]];
-                        var b2 = stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a2 * b2;
-                        break;
-
-                    case 99:
-                        return;
-                }
-                i += 4;
-            }
         }
     }
 }
