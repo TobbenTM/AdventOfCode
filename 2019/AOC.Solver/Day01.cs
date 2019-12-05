@@ -15,7 +15,8 @@ namespace AOC.Solver
             return input.Aggregate(0, (acc, cur) => acc + CalculateFuelReccurring(cur));
         }
 
-        public static int CalculateFuel(int mass) => (int)Math.Floor((decimal)mass / 3m) - 2;
+        public static int CalculateFuel(int mass) => (int)Math.Floor(mass / 3m) - 2;
+
         public static int CalculateFuelReccurring(int mass)
         {
             var result = CalculateFuel(mass);

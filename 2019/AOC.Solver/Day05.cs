@@ -13,9 +13,7 @@ namespace AOC.Solver
 
         public static int SolvePart2(int[] program, int input)
         {
-            var result = IntcodeComputer.Compute(ref program, input);
-
-            return result.Last();
+            return SolvePart1(program, input);
         }
     }
 }

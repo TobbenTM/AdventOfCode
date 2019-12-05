@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AOC.Solver;
 using Xunit;
@@ -34,22 +35,23 @@ namespace AOC.Runner
         [InlineData("Take an input, then output 0 if the input was zero or 1 if the input was non-zero. (using position mode)", 1, 1, 3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9)]
         [InlineData("Take an input, then output 0 if the input was zero or 1 if the input was non-zero. (using immediate mode)", 0, 0, 3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1)]
         [InlineData("Take an input, then output 0 if the input was zero or 1 if the input was non-zero. (using immediate mode)", 1, 1, 3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1)]
+        [InlineData("The program will output 999 if the input value is below 8", 999, 6, 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99)]
+        [InlineData("The program will output 1000 if the input value is equal to 8", 1000, 8, 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99)]
+        [InlineData("The program will output 1001 if the input value is greater than 8", 1001, 10, 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99)]
         public void ShouldRunSmallerPrograms(string description, int expected, int input, params int[] program)
         {
+            Console.WriteLine(description);
             var stack = program.ToArray();
-            Assert.Equal(expected, IntcodeComputer.Compute(ref stack, input).Last());
+            var output = IntcodeComputer.Compute(ref stack, input);
+            Console.WriteLine($"Got result: {output.Last()}, {output.Count(i => i == 0)} checks passed");
+            Assert.Equal(expected, output.Last());
         }
 
         [Fact]
-        public void ShouldRunLargerProgram()
+        public void ShouldThrowExceptionOnUnknownOpCode()
         {
-            var program = new[] { 3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99 };
-            var stack = program.ToArray();
-            Assert.Equal(999, IntcodeComputer.Compute(ref stack, 6).Last());
-            stack = program.ToArray();
-            Assert.Equal(1000, IntcodeComputer.Compute(ref stack, 8).Last());
-            stack = program.ToArray();
-            Assert.Equal(1001, IntcodeComputer.Compute(ref stack, 10).Last());
+            var program = new[] { 123 };
+            Assert.Throws<NotImplementedException>(() => IntcodeComputer.Compute(ref program));
         }
     }
 }

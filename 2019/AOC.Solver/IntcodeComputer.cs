@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AOC.Solver
 {
@@ -9,100 +10,145 @@ namespace AOC.Solver
         {
             Position = 0,
             Immediate = 1,
+            Auto = 999,
+        }
+
+        public enum OpCode
+        {
+            Unknown = 0,
+            Add = 1,
+            Multiply = 2,
+            Assign = 3,
+            Output = 4,
+            JumpIfPositive = 5,
+            JumpIfZero = 6,
+            CompareLessThan = 7,
+            CompareEquals = 8,
+            Halt = 99,
+        }
+
+        public class Context
+        {
+            private readonly int[] _stack;
+            private List<ParameterMode> _parameterModes;
+            private int _pointer;
+
+            public OpCode OpCode { get; private set; }
+
+
+            public Context(int[] stack)
+            {
+                _pointer = 0;
+                _stack = stack;
+            }
+
+            public void Clear()
+            {
+                var opCode = _stack[_pointer++];
+                OpCode = (OpCode)(opCode % 100);
+
+                _parameterModes = new List<ParameterMode>
+                {
+                    (ParameterMode)(Math.Floor(opCode / 100m) % 10),
+                    (ParameterMode)Math.Floor(opCode / 1000m),
+                    (ParameterMode)Math.Floor(opCode / 10000m),
+                };
+            }
+
+            public int GetNextParameter(ParameterMode parameterMode = ParameterMode.Auto)
+            {
+                parameterMode = parameterMode == ParameterMode.Auto ? _parameterModes.First() : parameterMode;
+                _parameterModes.RemoveAt(0);
+                return parameterMode == ParameterMode.Immediate ? _stack[_pointer++] : _stack[_stack[_pointer++]];
+            }
+
+            public void Jump(int address)
+            {
+                _pointer = address;
+            }
+
+            public void Skip()
+            {
+                _pointer += 1;
+            }
+
+            public int[] Assign(int address, int value)
+            {
+                _stack[address] = value;
+                return _stack;
+            }
         }
 
         public static List<int> Compute(ref int[] stack, int input = 0)
         {
             var output = new List<int>();
-            for (var i = 0; i < stack.Length;)
+            var ctx = new Context(stack);
+
+            while (true)
             {
-                var op = stack[i];
-
-                var mode1 = (ParameterMode)(Math.Floor(op / 100m) % 10);
-                var mode2 = (ParameterMode)Math.Floor(op / 1000m);
-                var mode3 = (ParameterMode)Math.Floor(op / 10000m);
-
-                if (op >= 100)
+                ctx.Clear();
+                switch (ctx.OpCode)
                 {
-                    op = op % 100;
-                }
-
-                switch (op)
-                {
-                    case 1:
-                        var a1 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b1 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a1 + b1;
-                        i += 4;
+                    case OpCode.Add:
+                        var sum = ctx.GetNextParameter() + ctx.GetNextParameter();
+                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), sum);
                         break;
 
-                    case 2:
-                        var a2 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b2 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a2 * b2;
-                        i += 4;
+                    case OpCode.Multiply:
+                        var product = ctx.GetNextParameter() * ctx.GetNextParameter();
+                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), product);
                         break;
 
-                    case 3:
-                        stack[stack[i + 1]] = input;
-                        i += 2;
+                    case OpCode.Assign:
+                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), input);
                         break;
 
-                    case 4:
-                        var a4 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        output.Add(a4);
-                        if (a4 > 0 && stack[i + 2] % 100 != 99)
+                    case OpCode.Output:
+                        output.Add(ctx.GetNextParameter());
+                        break;
+
+                    case OpCode.JumpIfPositive:
+                        if (ctx.GetNextParameter() != 0)
                         {
-                            Console.WriteLine($"Error executing op #{i}!");
+                            var address = ctx.GetNextParameter();
+                            ctx.Jump(address);
+                            break;
                         }
-                        i += 2;
+                        ctx.Skip();
                         break;
 
-                    case 5:
-                        var a5 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b5 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        if (a5 != 0)
+                    case OpCode.JumpIfZero:
+                        if (ctx.GetNextParameter() == 0)
                         {
-                            i = b5;
+                            var address = ctx.GetNextParameter();
+                            ctx.Jump(address);
+                            break;
                         }
-                        else
-                        {
-                            i += 3;
-                        }
+                        ctx.Skip();
                         break;
 
-                    case 6:
-                        var a6 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b6 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        if (a6 == 0)
-                        {
-                            i = b6;
-                        }
-                        else
-                        {
-                            i += 3;
-                        }
+                    case OpCode.CompareLessThan:
+                        var lesser = ctx.GetNextParameter();
+                        var greater = ctx.GetNextParameter();
+                        var lessThan = lesser < greater ? 1 : 0;
+                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), lessThan);
                         break;
 
-                    case 7:
-                        var a7 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b7 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a7 < b7 ? 1 : 0;
-                        i += 4;
+                    case OpCode.CompareEquals:
+                        var a = ctx.GetNextParameter();
+                        var b = ctx.GetNextParameter();
+                        var equal = a == b ? 1 : 0;
+                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), equal);
                         break;
 
-                    case 8:
-                        var a8 = mode1 == ParameterMode.Immediate ? stack[i + 1] : stack[stack[i + 1]];
-                        var b8 = mode2 == ParameterMode.Immediate ? stack[i + 2] : stack[stack[i + 2]];
-                        stack[stack[i + 3]] = a8 == b8 ? 1 : 0;
-                        i += 4;
-                        break;
-
-                    case 99:
+                    case OpCode.Halt:
                         return output;
+
+                    case OpCode.Unknown:
+                    default:
+                        throw new NotImplementedException($"OpCode {(int)ctx.OpCode} is not yet implemented!");
                 }
             }
-            return output;
         }
     }
 }
