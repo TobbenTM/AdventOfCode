@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AOC.Solver
 {
-    public static class IntcodeComputer
+    public class IntcodeComputer
     {
+        private readonly Context _ctx;
+
         public enum ParameterMode
         {
             Position = 0,
@@ -77,76 +80,94 @@ namespace AOC.Solver
                 _stack[address] = value;
                 return _stack;
             }
+
+            public int Get(int address)
+            {
+                return _stack[address];
+            }
         }
 
-        public static List<int> Compute(ref int[] stack, int input = 0)
+        public IntcodeComputer(int[] program)
         {
-            var output = new List<int>();
-            var ctx = new Context(stack);
+            var localStack = program.ToArray();
+            _ctx = new Context(localStack);
+        }
+
+        public int GetValue(int address) => _ctx.Get(address);
+
+        public Task<IEnumerable<int>> ComputeAsync(params int[] inputs)
+        {
+            return Task.Factory.StartNew(() => Compute(inputs));
+        }
+
+        public IEnumerable<int> Compute(params int[] inputs)
+        {
+            var inputQueue = new Queue<int>(inputs);
 
             while (true)
             {
-                ctx.Clear();
-                switch (ctx.OpCode)
+                _ctx.Clear();
+                switch (_ctx.OpCode)
                 {
                     case OpCode.Add:
-                        var sum = ctx.GetNextParameter() + ctx.GetNextParameter();
-                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), sum);
+                        var sum = _ctx.GetNextParameter() + _ctx.GetNextParameter();
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), sum);
                         break;
 
                     case OpCode.Multiply:
-                        var product = ctx.GetNextParameter() * ctx.GetNextParameter();
-                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), product);
+                        var product = _ctx.GetNextParameter() * _ctx.GetNextParameter();
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), product);
                         break;
 
                     case OpCode.Assign:
-                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), input);
+                        var input = inputQueue.Dequeue();
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), input);
                         break;
 
                     case OpCode.Output:
-                        output.Add(ctx.GetNextParameter());
+                        yield return _ctx.GetNextParameter();
                         break;
 
                     case OpCode.JumpIfPositive:
-                        if (ctx.GetNextParameter() != 0)
+                        if (_ctx.GetNextParameter() != 0)
                         {
-                            var address = ctx.GetNextParameter();
-                            ctx.Jump(address);
+                            var address = _ctx.GetNextParameter();
+                            _ctx.Jump(address);
                             break;
                         }
-                        ctx.Skip();
+                        _ctx.Skip();
                         break;
 
                     case OpCode.JumpIfZero:
-                        if (ctx.GetNextParameter() == 0)
+                        if (_ctx.GetNextParameter() == 0)
                         {
-                            var address = ctx.GetNextParameter();
-                            ctx.Jump(address);
+                            var address = _ctx.GetNextParameter();
+                            _ctx.Jump(address);
                             break;
                         }
-                        ctx.Skip();
+                        _ctx.Skip();
                         break;
 
                     case OpCode.CompareLessThan:
-                        var lesser = ctx.GetNextParameter();
-                        var greater = ctx.GetNextParameter();
+                        var lesser = _ctx.GetNextParameter();
+                        var greater = _ctx.GetNextParameter();
                         var lessThan = lesser < greater ? 1 : 0;
-                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), lessThan);
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), lessThan);
                         break;
 
                     case OpCode.CompareEquals:
-                        var a = ctx.GetNextParameter();
-                        var b = ctx.GetNextParameter();
+                        var a = _ctx.GetNextParameter();
+                        var b = _ctx.GetNextParameter();
                         var equal = a == b ? 1 : 0;
-                        stack = ctx.Assign(ctx.GetNextParameter(ParameterMode.Immediate), equal);
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), equal);
                         break;
 
                     case OpCode.Halt:
-                        return output;
+                        yield break;
 
                     case OpCode.Unknown:
                     default:
-                        throw new NotImplementedException($"OpCode {(int)ctx.OpCode} is not yet implemented!");
+                        throw new NotImplementedException($"OpCode {(int)_ctx.OpCode} is not yet implemented!");
                 }
             }
         }

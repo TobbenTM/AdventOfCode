@@ -13,9 +13,9 @@ namespace AOC.Runner
         [InlineData(30, 1, 1, 1, 4, 99, 5, 6, 0, 99)]
         public void ShouldAlterFirstSlot(int expected, params int[] program)
         {
-            var stack = program.ToArray();
-            IntcodeComputer.Compute(ref stack);
-            Assert.Equal(expected, stack.First());
+            var computer = new IntcodeComputer(program);
+            computer.Compute().ToList();
+            Assert.Equal(expected, computer.GetValue(0));
         }
 
         [Theory]
@@ -41,8 +41,8 @@ namespace AOC.Runner
         public void ShouldRunSmallerPrograms(string description, int expected, int input, params int[] program)
         {
             Console.WriteLine(description);
-            var stack = program.ToArray();
-            var output = IntcodeComputer.Compute(ref stack, input);
+            var computer = new IntcodeComputer(program);
+            var output = computer.Compute(input).ToList();
             Console.WriteLine($"Got result: {output.Last()}, {output.Count(i => i == 0)} checks passed");
             Assert.Equal(expected, output.Last());
         }
@@ -51,7 +51,8 @@ namespace AOC.Runner
         public void ShouldThrowExceptionOnUnknownOpCode()
         {
             var program = new[] { 123 };
-            Assert.Throws<NotImplementedException>(() => IntcodeComputer.Compute(ref program));
+            var computer = new IntcodeComputer(program);
+            Assert.Throws<NotImplementedException>(() => computer.Compute().ToList());
         }
     }
 }

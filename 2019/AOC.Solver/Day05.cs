@@ -6,7 +6,7 @@ namespace AOC.Solver
     {
         public static int SolvePart1(int[] program, int input)
         {
-            var result = IntcodeComputer.Compute(ref program, input);
+            var result = new IntcodeComputer(program).Compute(input);
 
             return result.Last();
         }

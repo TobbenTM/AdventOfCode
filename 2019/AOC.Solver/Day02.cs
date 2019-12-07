@@ -9,9 +9,10 @@ namespace AOC.Solver
             input[1] = 12;
             input[2] = 2;
 
-            IntcodeComputer.Compute(ref input);
+            var computer = new IntcodeComputer(input);
+            computer.Compute().ToList();
 
-            return input[0];
+            return computer.GetValue(0);
         }
 
         public static int SolvePart2(int[] input, int target)
@@ -23,8 +24,12 @@ namespace AOC.Solver
                     var stack = input.ToArray();
                     stack[1] = noun;
                     stack[2] = verb;
-                    IntcodeComputer.Compute(ref stack);
-                    if (stack[0] == target)
+
+                    var computer = new IntcodeComputer(stack);
+                    computer.Compute().ToList();
+
+                    var result = computer.GetValue(0);
+                    if (result == target)
                     {
                         return 100 * noun + verb;
                     }
