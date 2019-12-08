@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +8,6 @@ namespace AOC.Solver
 {
     public class IntcodeComputer
     {
-        private readonly Context _ctx;
-
         public enum ParameterMode
         {
             Position = 0,
@@ -87,6 +86,13 @@ namespace AOC.Solver
             }
         }
 
+        private readonly Context _ctx;
+        private BlockingCollection<int> _input;
+
+        public Task Computation { get; private set; }
+
+        public BlockingCollection<int> Output { get; } = new BlockingCollection<int>();
+
         public IntcodeComputer(int[] program)
         {
             var localStack = program.ToArray();
@@ -95,15 +101,29 @@ namespace AOC.Solver
 
         public int GetValue(int address) => _ctx.Get(address);
 
-        public Task<IEnumerable<int>> ComputeAsync(params int[] inputs)
-        {
-            return Task.Factory.StartNew(() => Compute(inputs));
-        }
-
+        /// <summary>
+        /// TODO: Refactor this
+        /// </summary>
         public IEnumerable<int> Compute(params int[] inputs)
         {
-            var inputQueue = new Queue<int>(inputs);
+            var inputCollection = new BlockingCollection<int>();
+            foreach (var input in inputs)
+            {
+                inputCollection.Add(input);
+            }
+            StartCompute(inputCollection);
+            Computation.GetAwaiter().GetResult();
+            return Output;
+        }
 
+        public void StartCompute(BlockingCollection<int> input)
+        {
+            _input = input;
+            Computation = Task.Factory.StartNew(Compute);
+        }
+
+        private void Compute()
+        {
             while (true)
             {
                 _ctx.Clear();
@@ -120,12 +140,11 @@ namespace AOC.Solver
                         break;
 
                     case OpCode.Assign:
-                        var input = inputQueue.Dequeue();
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), input);
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), _input.Take());
                         break;
 
                     case OpCode.Output:
-                        yield return _ctx.GetNextParameter();
+                        Output.Add(_ctx.GetNextParameter());
                         break;
 
                     case OpCode.JumpIfPositive:
@@ -163,7 +182,8 @@ namespace AOC.Solver
                         break;
 
                     case OpCode.Halt:
-                        yield break;
+                        Output.CompleteAdding();
+                        return;
 
                     case OpCode.Unknown:
                     default:

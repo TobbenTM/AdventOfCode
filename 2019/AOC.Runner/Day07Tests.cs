@@ -27,7 +27,7 @@ namespace AOC.Runner
         public async Task Part2()
         {
             var result = await Day07.SolvePart2(_input);
-            Assert.Equal(-1, result);
+            Assert.Equal(4275738, result);
         }
 
         [Theory]

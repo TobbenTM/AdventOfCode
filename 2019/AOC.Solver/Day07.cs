@@ -44,15 +44,23 @@ namespace AOC.Solver
             var amplifierD = new IntcodeComputer(program);
             var amplifierE = new IntcodeComputer(program);
 
-            var outputA = amplifierA.Compute(phases[0], 0);
-            var outputB = amplifierA.Compute(phases[1], 0);
-            var outputC = amplifierA.Compute(phases[2], 0);
-            var outputD = amplifierA.Compute(phases[3], 0);
-            var outputE = amplifierA.Compute(phases[4], 0);
+            // TODO: This is ugly - fix
+            amplifierA.Output.Add(phases[1]);
+            amplifierB.Output.Add(phases[2]);
+            amplifierC.Output.Add(phases[3]);
+            amplifierD.Output.Add(phases[4]);
+            amplifierE.Output.Add(phases[0]);
+            amplifierE.Output.Add(0);
 
-            // TODO
+            amplifierA.StartCompute(amplifierE.Output);
+            amplifierB.StartCompute(amplifierA.Output);
+            amplifierC.StartCompute(amplifierB.Output);
+            amplifierD.StartCompute(amplifierC.Output);
+            amplifierE.StartCompute(amplifierD.Output);
 
-            return outputE.Last();
+            await Task.WhenAll(amplifierA.Computation, amplifierB.Computation, amplifierC.Computation, amplifierD.Computation, amplifierE.Computation);
+
+            return amplifierE.Output.Last();
         }
 
         // Source: https://stackoverflow.com/questions/1952153/what-is-the-best-way-to-find-all-combinations-of-items-in-an-array/10629938#10629938
