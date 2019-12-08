@@ -87,9 +87,10 @@ namespace AOC.Solver
         }
 
         private readonly Context _ctx;
-        private BlockingCollection<int> _input;
 
         public Task Computation { get; private set; }
+
+        public BlockingCollection<int> Input { get; private set; } = new BlockingCollection<int>();
 
         public BlockingCollection<int> Output { get; } = new BlockingCollection<int>();
 
@@ -106,19 +107,18 @@ namespace AOC.Solver
         /// </summary>
         public IEnumerable<int> Compute(params int[] inputs)
         {
-            var inputCollection = new BlockingCollection<int>();
             foreach (var input in inputs)
             {
-                inputCollection.Add(input);
+                Input.Add(input);
             }
-            StartCompute(inputCollection);
+            Computation = Task.Factory.StartNew(Compute);
             Computation.GetAwaiter().GetResult();
             return Output;
         }
 
         public void StartCompute(BlockingCollection<int> input)
         {
-            _input = input;
+            Input = input;
             Computation = Task.Factory.StartNew(Compute);
         }
 
@@ -140,7 +140,7 @@ namespace AOC.Solver
                         break;
 
                     case OpCode.Assign:
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), _input.Take());
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), Input.Take());
                         break;
 
                     case OpCode.Output:
