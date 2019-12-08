@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AOC.Solver.IntcodeComputer;
 
 namespace AOC.Solver
 {
@@ -18,11 +19,11 @@ namespace AOC.Solver
 
         public static Task<int> ComputeOnce(int[] program, params int[] phases)
         {
-            var a = new IntcodeComputer(program).Compute(phases[0], 0);
-            var b = new IntcodeComputer(program).Compute(phases[1], a.Last());
-            var c = new IntcodeComputer(program).Compute(phases[2], b.Last());
-            var d = new IntcodeComputer(program).Compute(phases[3], c.Last());
-            var e = new IntcodeComputer(program).Compute(phases[4], d.Last());
+            var a = new Computer(program).Compute(phases[0], 0);
+            var b = new Computer(program).Compute(phases[1], a.Last());
+            var c = new Computer(program).Compute(phases[2], b.Last());
+            var d = new Computer(program).Compute(phases[3], c.Last());
+            var e = new Computer(program).Compute(phases[4], d.Last());
             return Task.FromResult(e.Last());
         }
 
@@ -38,19 +39,11 @@ namespace AOC.Solver
 
         public static async Task<int> ComputeWithFeedbackLoop(int[] program, params int[] phases)
         {
-            var amplifierA = new IntcodeComputer(program);
-            var amplifierB = new IntcodeComputer(program);
-            var amplifierC = new IntcodeComputer(program);
-            var amplifierD = new IntcodeComputer(program);
-            var amplifierE = new IntcodeComputer(program);
-
-            // TODO: This is ugly - fix
-            amplifierA.Output.Add(phases[1]);
-            amplifierB.Output.Add(phases[2]);
-            amplifierC.Output.Add(phases[3]);
-            amplifierD.Output.Add(phases[4]);
-            amplifierE.Output.Add(phases[0]);
-            amplifierE.Output.Add(0);
+            var amplifierA = new Computer(program, phases[0], 0);
+            var amplifierB = new Computer(program, phases[1]);
+            var amplifierC = new Computer(program, phases[2]);
+            var amplifierD = new Computer(program, phases[3]);
+            var amplifierE = new Computer(program, phases[4]);
 
             amplifierA.StartCompute(amplifierE.Output);
             amplifierB.StartCompute(amplifierA.Output);

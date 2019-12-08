@@ -1,4 +1,5 @@
 using System.Linq;
+using AOC.Solver.IntcodeComputer;
 
 namespace AOC.Solver
 {
@@ -9,8 +10,8 @@ namespace AOC.Solver
             input[1] = 12;
             input[2] = 2;
 
-            var computer = new IntcodeComputer(input);
-            computer.Compute().ToList();
+            var computer = new Computer(input);
+            computer.Compute();
 
             return computer.GetValue(0);
         }
@@ -25,8 +26,8 @@ namespace AOC.Solver
                     stack[1] = noun;
                     stack[2] = verb;
 
-                    var computer = new IntcodeComputer(stack);
-                    computer.Compute().ToList();
+                    var computer = new Computer(stack);
+                    computer.Compute();
 
                     var result = computer.GetValue(0);
                     if (result == target)

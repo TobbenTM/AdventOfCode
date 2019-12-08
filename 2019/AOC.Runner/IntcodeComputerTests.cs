@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using AOC.Solver;
+using AOC.Solver.IntcodeComputer;
 using Xunit;
 
 namespace AOC.Runner
@@ -13,7 +13,7 @@ namespace AOC.Runner
         [InlineData(30, 1, 1, 1, 4, 99, 5, 6, 0, 99)]
         public void ShouldAlterFirstSlot(int expected, params int[] program)
         {
-            var computer = new IntcodeComputer(program);
+            var computer = new Computer(program);
             computer.Compute().ToList();
             Assert.Equal(expected, computer.GetValue(0));
         }
@@ -41,7 +41,7 @@ namespace AOC.Runner
         public void ShouldRunSmallerPrograms(string description, int expected, int input, params int[] program)
         {
             Console.WriteLine(description);
-            var computer = new IntcodeComputer(program);
+            var computer = new Computer(program);
             var output = computer.Compute(input).ToList();
             Console.WriteLine($"Got result: {output.Last()}, {output.Count(i => i == 0)} checks passed");
             Assert.Equal(expected, output.Last());
@@ -51,7 +51,7 @@ namespace AOC.Runner
         public void ShouldThrowExceptionOnUnknownOpCode()
         {
             var program = new[] { 123 };
-            var computer = new IntcodeComputer(program);
+            var computer = new Computer(program);
             Assert.Throws<NotImplementedException>(() => computer.Compute().ToList());
         }
     }

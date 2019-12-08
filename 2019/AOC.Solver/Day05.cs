@@ -1,4 +1,5 @@
 using System.Linq;
+using AOC.Solver.IntcodeComputer;
 
 namespace AOC.Solver
 {
@@ -6,7 +7,7 @@ namespace AOC.Solver
     {
         public static int SolvePart1(int[] program, int input)
         {
-            var result = new IntcodeComputer(program).Compute(input);
+            var result = new Computer(program).Compute(input);
 
             return result.Last();
         }

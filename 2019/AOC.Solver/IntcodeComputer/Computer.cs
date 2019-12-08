@@ -4,89 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AOC.Solver
+namespace AOC.Solver.IntcodeComputer
 {
-    public class IntcodeComputer
+    public class Computer
     {
-        public enum ParameterMode
-        {
-            Position = 0,
-            Immediate = 1,
-            Auto = 999,
-        }
-
-        public enum OpCode
-        {
-            Unknown = 0,
-            Add = 1,
-            Multiply = 2,
-            Assign = 3,
-            Output = 4,
-            JumpIfPositive = 5,
-            JumpIfZero = 6,
-            CompareLessThan = 7,
-            CompareEquals = 8,
-            Halt = 99,
-        }
-
-        public class Context
-        {
-            private readonly int[] _stack;
-            private List<ParameterMode> _parameterModes;
-            private int _pointer;
-
-            public OpCode OpCode { get; private set; }
-
-
-            public Context(int[] stack)
-            {
-                _pointer = 0;
-                _stack = stack;
-            }
-
-            public void Clear()
-            {
-                var opCode = _stack[_pointer++];
-                OpCode = (OpCode)(opCode % 100);
-
-                _parameterModes = new List<ParameterMode>
-                {
-                    (ParameterMode)(Math.Floor(opCode / 100m) % 10),
-                    (ParameterMode)Math.Floor(opCode / 1000m),
-                    (ParameterMode)Math.Floor(opCode / 10000m),
-                };
-            }
-
-            public int GetNextParameter(ParameterMode parameterMode = ParameterMode.Auto)
-            {
-                parameterMode = parameterMode == ParameterMode.Auto ? _parameterModes.First() : parameterMode;
-                _parameterModes.RemoveAt(0);
-                return parameterMode == ParameterMode.Immediate ? _stack[_pointer++] : _stack[_stack[_pointer++]];
-            }
-
-            public void Jump(int address)
-            {
-                _pointer = address;
-            }
-
-            public void Skip()
-            {
-                _pointer += 1;
-            }
-
-            public int[] Assign(int address, int value)
-            {
-                _stack[address] = value;
-                return _stack;
-            }
-
-            public int Get(int address)
-            {
-                return _stack[address];
-            }
-        }
-
         private readonly Context _ctx;
+        private readonly Queue<int> _inputSeed;
 
         public Task Computation { get; private set; }
 
@@ -94,16 +17,17 @@ namespace AOC.Solver
 
         public BlockingCollection<int> Output { get; } = new BlockingCollection<int>();
 
-        public IntcodeComputer(int[] program)
+        public Computer(int[] program, params int[] inputSeed)
         {
             var localStack = program.ToArray();
             _ctx = new Context(localStack);
+            _inputSeed = new Queue<int>(inputSeed);
         }
 
         public int GetValue(int address) => _ctx.Get(address);
 
         /// <summary>
-        /// TODO: Refactor this
+        /// Obsolete - legacy synchronous computation
         /// </summary>
         public IEnumerable<int> Compute(params int[] inputs)
         {
@@ -140,7 +64,16 @@ namespace AOC.Solver
                         break;
 
                     case OpCode.Assign:
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), Input.Take());
+                        int input;
+                        if (_inputSeed.Count > 0)
+                        {
+                            input = _inputSeed.Dequeue();
+                        }
+                        else
+                        {
+                            input = Input.Take();
+                        }
+                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), input);
                         break;
 
                     case OpCode.Output:
