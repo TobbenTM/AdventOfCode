@@ -17,14 +17,14 @@ namespace AOC.Solver
             return (int)results.Max();
         }
 
-        public static Task<long> ComputeOnce(int[] program, params int[] phases)
+        public static async Task<long> ComputeOnce(int[] program, params int[] phases)
         {
-            var a = new Computer(program).Compute(phases[0], 0);
-            var b = new Computer(program).Compute(phases[1], a.Last());
-            var c = new Computer(program).Compute(phases[2], b.Last());
-            var d = new Computer(program).Compute(phases[3], c.Last());
-            var e = new Computer(program).Compute(phases[4], d.Last());
-            return Task.FromResult(e.Last());
+            var a = await new Computer(program).ComputeAsync(phases[0], 0);
+            var b = await new Computer(program).ComputeAsync(phases[1], a.Last());
+            var c = await new Computer(program).ComputeAsync(phases[2], b.Last());
+            var d = await new Computer(program).ComputeAsync(phases[3], c.Last());
+            var e = await new Computer(program).ComputeAsync(phases[4], d.Last());
+            return e.Last();
         }
 
         public static async Task<int> SolvePart2(int[] program)

@@ -30,23 +30,23 @@ namespace AOC.Solver.IntcodeComputer
 
         public long GetValue(int address) => _ctx.Get(address);
 
-        /// <summary>
-        /// Obsolete - legacy synchronous computation
-        /// </summary>
-        public IEnumerable<long> Compute(params long[] inputs)
+        public async Task<IEnumerable<long>> ComputeAsync(params long[] inputs)
         {
             foreach (var input in inputs)
             {
                 Input.Add(input);
             }
-            Computation = Task.Factory.StartNew(Compute);
-            Computation.GetAwaiter().GetResult();
+            StartCompute();
+            await Computation;
             return Output;
         }
 
-        public void StartCompute(BlockingCollection<long> input)
+        public void StartCompute(BlockingCollection<long> input = null)
         {
-            Input = input;
+            if (input != null)
+            {
+                Input = input;
+            }
             Computation = Task.Factory.StartNew(Compute);
         }
 

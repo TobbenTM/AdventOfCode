@@ -1,22 +1,23 @@
 using System.Linq;
+using System.Threading.Tasks;
 using AOC.Solver.IntcodeComputer;
 
 namespace AOC.Solver
 {
     public static class Day02
     {
-        public static int SolvePart1(int[] input)
+        public static async Task<int> SolvePart1(int[] input)
         {
             input[1] = 12;
             input[2] = 2;
 
             var computer = new Computer(input);
-            computer.Compute();
+            await computer.ComputeAsync();
 
             return (int)computer.GetValue(0);
         }
 
-        public static int SolvePart2(int[] input, int target)
+        public static async Task<int> SolvePart2(int[] input, int target)
         {
             for (var noun = 0; noun <= 99; noun++)
             {
@@ -27,7 +28,7 @@ namespace AOC.Solver
                     stack[2] = verb;
 
                     var computer = new Computer(stack);
-                    computer.Compute();
+                    await computer.ComputeAsync();
 
                     var result = computer.GetValue(0);
                     if (result == target)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AOC.Solver;
 using Xunit;
 
@@ -6,16 +7,16 @@ namespace AOC.Runner
     public class Day02Tests
     {
         [Fact]
-        public void Part1()
+        public async Task Part1()
         {
-            var result = Day02.SolvePart1(_input);
+            var result = await Day02.SolvePart1(_input);
             Assert.Equal(11590668, result);
         }
 
         [Fact]
-        public void Part2()
+        public async Task Part2()
         {
-            var result = Day02.SolvePart2(_input, 19690720);
+            var result = await Day02.SolvePart2(_input, 19690720);
             Assert.Equal(2254, result);
         }
 

@@ -1,18 +1,20 @@
 using System.Linq;
+using System.Threading.Tasks;
 using AOC.Solver.IntcodeComputer;
 
 namespace AOC.Solver
 {
     public static class Day05
     {
-        public static int SolvePart1(int[] program, int input)
+        public static async Task<int> SolvePart1(int[] program, int input)
         {
-            var result = new Computer(program).Compute(input);
+            var computer = new Computer(program);
+            var result = await computer.ComputeAsync(input);
 
             return (int)result.Last();
         }
 
-        public static int SolvePart2(int[] program, int input)
+        public static Task<int> SolvePart2(int[] program, int input)
         {
             return SolvePart1(program, input);
         }
