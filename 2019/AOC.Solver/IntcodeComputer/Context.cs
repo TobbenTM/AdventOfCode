@@ -28,7 +28,7 @@ namespace AOC.Solver.IntcodeComputer
             {
                 (ParameterMode)(Math.Floor(opCode / 100m) % 10),
                 (ParameterMode)(Math.Floor(opCode / 1000m) % 10),
-                (ParameterMode)Math.Floor(opCode / 10000m),
+                (ParameterMode)(Math.Floor(opCode / 10000m) % 10),
             });
         }
 
