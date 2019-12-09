@@ -9,7 +9,7 @@ namespace AOC.Solver
         {
             var result = new Computer(program).Compute(input);
 
-            return result.Last();
+            return (int)result.Last();
         }
 
         public static int SolvePart2(int[] program, int input)

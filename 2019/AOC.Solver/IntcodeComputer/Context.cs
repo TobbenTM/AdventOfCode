@@ -6,17 +6,18 @@ namespace AOC.Solver.IntcodeComputer
 {
     public class Context
     {
-        private readonly int[] _stack;
         private List<ParameterMode> _parameterModes;
+        private long[] _stack;
+        private int _relativeBase = 0;
         private int _pointer;
 
         public OpCode OpCode { get; private set; }
 
 
-        public Context(int[] stack)
+        public Context(long[] program)
         {
             _pointer = 0;
-            _stack = stack;
+            _stack = program.ToArray();
         }
 
         public void Clear()
@@ -27,37 +28,74 @@ namespace AOC.Solver.IntcodeComputer
             _parameterModes = new List<ParameterMode>
             {
                 (ParameterMode)(Math.Floor(opCode / 100m) % 10),
-                (ParameterMode)Math.Floor(opCode / 1000m),
+                (ParameterMode)(Math.Floor(opCode / 1000m) % 10),
                 (ParameterMode)Math.Floor(opCode / 10000m),
             };
         }
 
-        public int GetNextParameter(ParameterMode parameterMode = ParameterMode.Auto)
+        public long GetNextParameter()
         {
-            parameterMode = parameterMode == ParameterMode.Auto ? _parameterModes.First() : parameterMode;
-            _parameterModes.RemoveAt(0);
-            return parameterMode == ParameterMode.Immediate ? _stack[_pointer++] : _stack[_stack[_pointer++]];
+            CheckArraySize();
+            return _stack[GetNextParameterAddress()];
         }
 
-        public void Jump(int address)
+        public long GetNextParameterAddress()
         {
-            _pointer = address;
+            var parameterMode = _parameterModes.First();
+            _parameterModes.RemoveAt(0);
+            CheckArraySize();
+            switch (parameterMode)
+            {
+                case ParameterMode.Immediate:
+                    return _pointer++;
+                case ParameterMode.Position:
+                    return _stack[_pointer++];
+                case ParameterMode.Relative:
+                    return _relativeBase + _stack[_pointer++];
+                default:
+                    throw new InvalidOperationException($"Could not recognize parameter mode {(int)parameterMode}!");
+            }
+        }
+
+        public void Jump(long address)
+        {
+            _pointer = (int)address;
+            CheckArraySize();
         }
 
         public void Skip()
         {
             _pointer += 1;
+            CheckArraySize();
         }
 
-        public int[] Assign(int address, int value)
+        public void Assign(long address, long value)
         {
+            CheckArraySize((int)address);
             _stack[address] = value;
-            return _stack;
         }
 
-        public int Get(int address)
+        public long Get(int address)
         {
+            CheckArraySize(address);
             return _stack[address];
+        }
+
+        public void AdjustRelativeBase(long baseAdjustment)
+        {
+            _relativeBase += (int)baseAdjustment;
+        }
+
+        private void CheckArraySize(int? expectedSize = null)
+        {
+            if (expectedSize == null)
+            {
+                expectedSize = _relativeBase + (int)_stack[_pointer];
+            }
+            if (expectedSize > _stack.Length - 1)
+            {
+                Array.Resize(ref _stack, expectedSize.Value);
+            }
         }
     }
 }

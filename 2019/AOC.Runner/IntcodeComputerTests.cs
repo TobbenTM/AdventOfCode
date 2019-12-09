@@ -14,7 +14,7 @@ namespace AOC.Runner
         public void ShouldAlterFirstSlot(int expected, params int[] program)
         {
             var computer = new Computer(program);
-            computer.Compute().ToList();
+            computer.Compute();
             Assert.Equal(expected, computer.GetValue(0));
         }
 
@@ -42,7 +42,7 @@ namespace AOC.Runner
         {
             Console.WriteLine(description);
             var computer = new Computer(program);
-            var output = computer.Compute(input).ToList();
+            var output = computer.Compute(input);
             Console.WriteLine($"Got result: {output.Last()}, {output.Count(i => i == 0)} checks passed");
             Assert.Equal(expected, output.Last());
         }
@@ -52,7 +52,34 @@ namespace AOC.Runner
         {
             var program = new[] { 123 };
             var computer = new Computer(program);
-            Assert.Throws<NotImplementedException>(() => computer.Compute().ToList());
+            Assert.Throws<NotImplementedException>(() => computer.Compute());
+        }
+
+        [Fact]
+        public void ShouldSupportOutputtingLargeNumbers1()
+        {
+            var program = new long[] { 109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99 };
+            var computer = new Computer(program);
+            var output = computer.Compute();
+            Assert.Equal(program, output);
+        }
+
+        [Fact]
+        public void ShouldSupportOutputtingLargeNumbers2()
+        {
+            var program = new long[] { 1102, 34915192, 34915192, 7, 4, 7, 99, 0 };
+            var computer = new Computer(program);
+            var output = computer.Compute();
+            Assert.Equal(16, output.Last().ToString().Length);
+        }
+
+        [Fact]
+        public void ShouldSupportOutputtingLargeNumbers3()
+        {
+            var program = new long[] { 104, 1125899906842624, 99 };
+            var computer = new Computer(program);
+            var output = computer.Compute();
+            Assert.Equal(program[1], output.Last());
         }
     }
 }

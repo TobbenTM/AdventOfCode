@@ -9,27 +9,31 @@ namespace AOC.Solver.IntcodeComputer
     public class Computer
     {
         private readonly Context _ctx;
-        private readonly Queue<int> _inputSeed;
+        private readonly Queue<long> _inputSeed;
 
         public Task Computation { get; private set; }
 
-        public BlockingCollection<int> Input { get; private set; } = new BlockingCollection<int>();
+        public BlockingCollection<long> Input { get; private set; } = new BlockingCollection<long>();
 
-        public BlockingCollection<int> Output { get; } = new BlockingCollection<int>();
+        public BlockingCollection<long> Output { get; } = new BlockingCollection<long>();
 
         public Computer(int[] program, params int[] inputSeed)
+            : this(program.Select(i => (long)i).ToArray(), inputSeed.Select(i => (long)i).ToArray())
         {
-            var localStack = program.ToArray();
-            _ctx = new Context(localStack);
-            _inputSeed = new Queue<int>(inputSeed);
         }
 
-        public int GetValue(int address) => _ctx.Get(address);
+        public Computer(long[] program, params long[] inputSeed)
+        {
+            _ctx = new Context(program);
+            _inputSeed = new Queue<long>(inputSeed);
+        }
+
+        public long GetValue(int address) => _ctx.Get(address);
 
         /// <summary>
         /// Obsolete - legacy synchronous computation
         /// </summary>
-        public IEnumerable<int> Compute(params int[] inputs)
+        public IEnumerable<long> Compute(params long[] inputs)
         {
             foreach (var input in inputs)
             {
@@ -40,7 +44,7 @@ namespace AOC.Solver.IntcodeComputer
             return Output;
         }
 
-        public void StartCompute(BlockingCollection<int> input)
+        public void StartCompute(BlockingCollection<long> input)
         {
             Input = input;
             Computation = Task.Factory.StartNew(Compute);
@@ -55,16 +59,16 @@ namespace AOC.Solver.IntcodeComputer
                 {
                     case OpCode.Add:
                         var sum = _ctx.GetNextParameter() + _ctx.GetNextParameter();
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), sum);
+                        _ctx.Assign(_ctx.GetNextParameterAddress(), sum);
                         break;
 
                     case OpCode.Multiply:
                         var product = _ctx.GetNextParameter() * _ctx.GetNextParameter();
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), product);
+                        _ctx.Assign(_ctx.GetNextParameterAddress(), product);
                         break;
 
                     case OpCode.Assign:
-                        int input;
+                        long input;
                         if (_inputSeed.Count > 0)
                         {
                             input = _inputSeed.Dequeue();
@@ -73,7 +77,7 @@ namespace AOC.Solver.IntcodeComputer
                         {
                             input = Input.Take();
                         }
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), input);
+                        _ctx.Assign(_ctx.GetNextParameterAddress(), input);
                         break;
 
                     case OpCode.Output:
@@ -104,14 +108,19 @@ namespace AOC.Solver.IntcodeComputer
                         var lesser = _ctx.GetNextParameter();
                         var greater = _ctx.GetNextParameter();
                         var lessThan = lesser < greater ? 1 : 0;
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), lessThan);
+                        _ctx.Assign(_ctx.GetNextParameterAddress(), lessThan);
                         break;
 
                     case OpCode.CompareEquals:
                         var a = _ctx.GetNextParameter();
                         var b = _ctx.GetNextParameter();
                         var equal = a == b ? 1 : 0;
-                        _ctx.Assign(_ctx.GetNextParameter(ParameterMode.Immediate), equal);
+                        _ctx.Assign(_ctx.GetNextParameterAddress(), equal);
+                        break;
+
+                    case OpCode.SetRelativeBase:
+                        var baseAdjustment = _ctx.GetNextParameter();
+                        _ctx.AdjustRelativeBase(baseAdjustment);
                         break;
 
                     case OpCode.Halt:

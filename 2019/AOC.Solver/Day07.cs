@@ -14,10 +14,10 @@ namespace AOC.Solver
 
             var computeTasks = phaseCombinations.Select(c => ComputeOnce(program, c.ToArray())).ToArray();
             var results = await Task.WhenAll(computeTasks);
-            return results.Max();
+            return (int)results.Max();
         }
 
-        public static Task<int> ComputeOnce(int[] program, params int[] phases)
+        public static Task<long> ComputeOnce(int[] program, params int[] phases)
         {
             var a = new Computer(program).Compute(phases[0], 0);
             var b = new Computer(program).Compute(phases[1], a.Last());
@@ -53,7 +53,7 @@ namespace AOC.Solver
 
             await Task.WhenAll(amplifierA.Computation, amplifierB.Computation, amplifierC.Computation, amplifierD.Computation, amplifierE.Computation);
 
-            return amplifierE.Output.Last();
+            return (int)amplifierE.Output.Last();
         }
 
         // Source: https://stackoverflow.com/questions/1952153/what-is-the-best-way-to-find-all-combinations-of-items-in-an-array/10629938#10629938

@@ -13,7 +13,7 @@ namespace AOC.Solver
             var computer = new Computer(input);
             computer.Compute();
 
-            return computer.GetValue(0);
+            return (int)computer.GetValue(0);
         }
 
         public static int SolvePart2(int[] input, int target)

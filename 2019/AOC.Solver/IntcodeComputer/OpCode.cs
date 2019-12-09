@@ -11,6 +11,7 @@ namespace AOC.Solver.IntcodeComputer
         JumpIfZero = 6,
         CompareLessThan = 7,
         CompareEquals = 8,
+        SetRelativeBase = 9,
         Halt = 99,
     }
 }
