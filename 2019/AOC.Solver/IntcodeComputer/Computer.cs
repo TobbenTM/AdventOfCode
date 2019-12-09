@@ -54,7 +54,7 @@ namespace AOC.Solver.IntcodeComputer
         {
             while (true)
             {
-                _ctx.Clear();
+                _ctx.Reset();
                 switch (_ctx.OpCode)
                 {
                     case OpCode.Add:

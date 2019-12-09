@@ -6,13 +6,12 @@ namespace AOC.Solver.IntcodeComputer
 {
     public class Context
     {
-        private List<ParameterMode> _parameterModes;
+        private Queue<ParameterMode> _parameterModes;
         private long[] _stack;
         private int _relativeBase = 0;
         private int _pointer;
 
         public OpCode OpCode { get; private set; }
-
 
         public Context(long[] program)
         {
@@ -20,17 +19,17 @@ namespace AOC.Solver.IntcodeComputer
             _stack = program.ToArray();
         }
 
-        public void Clear()
+        public void Reset()
         {
             var opCode = _stack[_pointer++];
             OpCode = (OpCode)(opCode % 100);
 
-            _parameterModes = new List<ParameterMode>
+            _parameterModes = new Queue<ParameterMode>(new []
             {
                 (ParameterMode)(Math.Floor(opCode / 100m) % 10),
                 (ParameterMode)(Math.Floor(opCode / 1000m) % 10),
                 (ParameterMode)Math.Floor(opCode / 10000m),
-            };
+            });
         }
 
         public long GetNextParameter()
@@ -41,8 +40,7 @@ namespace AOC.Solver.IntcodeComputer
 
         public long GetNextParameterAddress()
         {
-            var parameterMode = _parameterModes.First();
-            _parameterModes.RemoveAt(0);
+            var parameterMode = _parameterModes.Dequeue();
             CheckArraySize();
             switch (parameterMode)
             {

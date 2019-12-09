@@ -51,9 +51,17 @@ namespace AOC.Runner
         [Fact]
         public async Task ShouldThrowExceptionOnUnknownOpCode()
         {
-            var program = new[] { 123 };
+            var program = new[] { 123 }; // No opcode with code 23
             var computer = new Computer(program);
             await Assert.ThrowsAsync<NotImplementedException>(() => computer.ComputeAsync());
+        }
+
+        [Fact]
+        public async Task ShoudThrowExceptionOnUnknownParameterMode()
+        {
+            var program = new[] { 901, 0, 0 }; // No parameter mode with code 9
+            var computer = new Computer(program);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => computer.ComputeAsync());
         }
 
         [Fact]
