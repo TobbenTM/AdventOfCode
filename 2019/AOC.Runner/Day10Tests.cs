@@ -20,7 +20,7 @@ namespace AOC.Runner
         [InlineData("Day10.Test.Large2.Input", 35)]
         [InlineData("Day10.Test.Large3.Input", 41)]
         [InlineData("Day10.Test.Large4.Input", 210)]
-        public async Task ShouldHandleExamples(string scenario, int expectedResult)
+        public async Task ShouldHandleExamplesForPart1(string scenario, int expectedResult)
         {
             var result = await Day10.SolvePart1(await ReadInput(scenario));
             Assert.Equal(expectedResult, result);
@@ -29,8 +29,16 @@ namespace AOC.Runner
         [Fact]
         public async Task Part2()
         {
-            var result = Day10.SolvePart2(await ReadInput());
+            var result = await Day10.SolvePart2(await ReadInput());
             Assert.Equal(-1, result);
+        }
+
+        [Theory]
+        [InlineData("Day10.Test.Large4.Input", 802)]
+        public async Task ShouldHandleExamplesForPart2(string scenario, int expectedResult)
+        {
+            var result = await Day10.SolvePart2(await ReadInput(scenario));
+            Assert.Equal(expectedResult, result);
         }
 
         private Task<string> ReadInput(string scenario = "Day10.Input") => File.ReadAllTextAsync(scenario);

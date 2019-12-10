@@ -10,7 +10,23 @@ namespace AOC.Solver
         public static async Task<int> SolvePart1(string input)
         {
             var map = ReadMap(input);
-            var tasks = new List<Task<(int numberOfAsteroids, int x, int y)>>();
+            var asteroids = await EvaluateMap(map);
+
+            return asteroids.Select(x => x.numberOfAsteroidsInView).Max();
+        }
+
+        public static async Task<int> SolvePart2(string input)
+        {
+            var map = ReadMap(input);
+            var asteroids = await EvaluateMap(map);
+            var best = asteroids.OrderByDescending(a => a.numberOfAsteroidsInView).First();
+
+            throw new NotImplementedException("Part 2 not implemented yet!");
+        }
+
+        private static Task<(int numberOfAsteroidsInView, int x, int y)[]> EvaluateMap(char[][] map)
+        {
+            var tasks = new List<Task<(int numberOfAsteroidsInView, int x, int y)>>();
 
             for (var y = 0; y < map.Length; y++)
             {
@@ -25,9 +41,7 @@ namespace AOC.Solver
                 }
             }
 
-            var results = await Task.WhenAll(tasks.ToArray());
-
-            return results.Select(x => x.numberOfAsteroids).Max();
+            return Task.WhenAll(tasks.ToArray());
         }
 
         private static (int numberOfAsteroids, int x, int y) FindNumberOfAsteroidsInView(char[][] map, int x, int y)
@@ -48,12 +62,6 @@ namespace AOC.Solver
             }
 
             return (result, x, y);
-        }
-
-        public static int SolvePart2(string input)
-        {
-            var map = ReadMap(input);
-            throw new NotImplementedException("Part 2 not implemented yet!");
         }
 
         private static bool HasLineOfSight(char[][] map, int x1, int y1, int x2, int y2)
