@@ -7,26 +7,70 @@ namespace AOC.Solver
 {
     public static class Day10
     {
+        public class RemoteAsteroid
+        {
+            public int X { get; set; }
+
+            public int Y { get; set; }
+
+            public int Distance { get; set; }
+
+            public double Angle { get; set; }
+
+            public int OtherAsteroidsInView { get; set; }
+
+            public void CalculateAngleAndDistance(RemoteAsteroid other)
+            {
+                var diffX = other.X - X;
+                var diffY = other.Y - Y;
+                Distance = Math.Abs(diffX) + Math.Abs(diffY);
+                Angle = ((Math.Atan2(diffY, -diffX) * (180d / Math.PI)) + 360) % 360;
+            }
+        }
+
         public static async Task<int> SolvePart1(string input)
         {
             var map = ReadMap(input);
             var asteroids = await EvaluateMap(map);
 
-            return asteroids.Select(x => x.numberOfAsteroidsInView).Max();
+            return asteroids.Select(a => a.OtherAsteroidsInView).Max();
         }
 
         public static async Task<int> SolvePart2(string input)
         {
             var map = ReadMap(input);
             var asteroids = await EvaluateMap(map);
-            var best = asteroids.OrderByDescending(a => a.numberOfAsteroidsInView).First();
+            var station = asteroids.OrderByDescending(a => a.OtherAsteroidsInView).First();
+            asteroids.Remove(station);
 
-            throw new NotImplementedException("Part 2 not implemented yet!");
+            foreach (var asteroid in asteroids)
+            {
+                asteroid.CalculateAngleAndDistance(station);
+            }
+
+            asteroids = asteroids.OrderByDescending(a => a.Angle).ThenBy(a => a.Distance).ToList();
+
+            var currentAngle = 91d;
+            for (var i = 0; i < 200 - 1; i++)
+            {
+                var next = asteroids.FirstOrDefault(a => a.Angle < currentAngle);
+                if (next == null)
+                {
+                    i -= 1;
+                    currentAngle = 361;
+                    continue;
+                }
+                asteroids.Remove(next);
+                currentAngle = next.Angle;
+            }
+
+            var finalAsteroid = asteroids.First(a => a.Angle < currentAngle);
+            return finalAsteroid.X * 100 + finalAsteroid.Y;
         }
 
-        private static Task<(int numberOfAsteroidsInView, int x, int y)[]> EvaluateMap(char[][] map)
+        private static async Task<List<RemoteAsteroid>> EvaluateMap(char[][] map)
         {
-            var tasks = new List<Task<(int numberOfAsteroidsInView, int x, int y)>>();
+            var tasks = new List<Task<RemoteAsteroid>>();
 
             for (var y = 0; y < map.Length; y++)
             {
@@ -37,14 +81,15 @@ namespace AOC.Solver
                     var xt = x;
                     var yt = y;
 
-                    tasks.Add(Task.Factory.StartNew(() => FindNumberOfAsteroidsInView(map, xt, yt)));
+                    tasks.Add(Task.Factory.StartNew(() => EvaluateAsteroid(map, xt, yt)));
                 }
             }
 
-            return Task.WhenAll(tasks.ToArray());
+            var result = await Task.WhenAll(tasks.ToArray());
+            return result.ToList();
         }
 
-        private static (int numberOfAsteroids, int x, int y) FindNumberOfAsteroidsInView(char[][] map, int x, int y)
+        private static RemoteAsteroid EvaluateAsteroid(char[][] map, int x, int y)
         {
             var result = 0;
 
@@ -61,7 +106,12 @@ namespace AOC.Solver
                 }
             }
 
-            return (result, x, y);
+            return new RemoteAsteroid
+            {
+                X = x,
+                Y = y,
+                OtherAsteroidsInView = result,
+            };
         }
 
         private static bool HasLineOfSight(char[][] map, int x1, int y1, int x2, int y2)

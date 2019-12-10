@@ -30,7 +30,7 @@ namespace AOC.Runner
         public async Task Part2()
         {
             var result = await Day10.SolvePart2(await ReadInput());
-            Assert.Equal(-1, result);
+            Assert.Equal(608, result);
         }
 
         [Theory]
