@@ -30,6 +30,11 @@ namespace AOC.Solver.IntcodeComputer
 
         public long GetValue(int address) => _ctx.Get(address);
 
+        public Task<long> GetOutputAsync()
+        {
+            return Task.Factory.StartNew(() => Output.Take());
+        }
+
         public async Task<IEnumerable<long>> ComputeAsync(params long[] inputs)
         {
             foreach (var input in inputs)

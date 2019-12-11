@@ -35,7 +35,8 @@ namespace AOC.Solver.IntcodeComputer
         public long GetNextParameter()
         {
             CheckArraySize();
-            return _stack[GetNextParameterAddress()];
+            var address = GetNextParameterAddress();
+            return _stack[address];
         }
 
         public long GetNextParameterAddress()
@@ -92,7 +93,7 @@ namespace AOC.Solver.IntcodeComputer
             }
             if (expectedSize > _stack.Length - 1)
             {
-                Array.Resize(ref _stack, expectedSize.Value);
+                Array.Resize(ref _stack, expectedSize.Value + 1);
             }
         }
     }
