@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AOC.Solver;
 using Xunit;
 
@@ -41,14 +42,14 @@ namespace AOC.Runner
         }
 
         [Fact]
-        public void Part2()
+        public async Task Part2()
         {
-            var result = Day12.SolvePart2(_input);
-            Assert.Equal(-1, result);
+            var result = await Day12.SolvePart2(_input);
+            Assert.Equal(327636285682704L, result);
         }
 
         [Fact]
-        public void ShouldCalculateExample1ForPart2()
+        public async Task ShouldCalculateExample1ForPart2()
         {
             var input = new[]
             {
@@ -57,8 +58,22 @@ namespace AOC.Runner
                 "<x=4, y=-8, z=8>",
                 "<x=3, y=5, z=-1>",
             };
-            var result = Day12.SolvePart2(input);
+            var result = await Day12.SolvePart2(input);
             Assert.Equal(2772, result);
+        }
+
+        [Fact]
+        public async Task ShouldCalculateExample2ForPart2()
+        {
+            var input = new[]
+            {
+                "<x=-8, y=-10, z=0>",
+                "<x=5, y=5, z=10>",
+                "<x=2, y=-7, z=3>",
+                "<x=9, y=-8, z=-3>",
+            };
+            var result = await Day12.SolvePart2(input);
+            Assert.Equal(4686774924, result);
         }
 
         private readonly string[] _input =

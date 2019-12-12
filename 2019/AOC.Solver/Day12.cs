@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AOC.Solver
 {
@@ -8,8 +11,6 @@ namespace AOC.Solver
     {
         private class Moon
         {
-            private readonly HashSet<(int x, int y, int z, int vx, int vy, int vz)> _history = new HashSet<(int x, int y, int z, int vx, int vy, int vz)>();
-
             public int X { get; set; }
 
             public int Y { get; set; }
@@ -34,7 +35,6 @@ namespace AOC.Solver
                 X = numbers[0];
                 Y = numbers[1];
                 Z = numbers[2];
-                _history.Add((X, Y, Z, 0, 0, 0));
             }
 
             public void EvaluateGravity(Moon other)
@@ -77,16 +77,6 @@ namespace AOC.Solver
                 Y += VelocityY;
                 Z += VelocityZ;
             }
-
-            public void RecordPosition()
-            {
-                if (!HasBeenHereBefore())
-                {
-                    _history.Add((X, Y, Z, VelocityX, VelocityY, VelocityZ));
-                }
-            }
-
-            public bool HasBeenHereBefore() => _history.Contains((X, Y, Z, VelocityX, VelocityY, VelocityZ));
         }
 
         public static int SolvePart1(string[] input, int time)
@@ -106,33 +96,41 @@ namespace AOC.Solver
             return moons.Aggregate(0, (acc, moon) => acc + moon.TotalEnergy);
         }
 
-        public static int SolvePart2(string[] input)
+        public static async Task<long> SolvePart2(string[] input)
         {
-            var moons = input.Select(s => new Moon(s)).ToArray();
+            var cycles = await Task.WhenAll(
+                FindPlaneCycle(input.Select(s => new Moon(s)).ToArray(), moon => string.Join("+", moon.X, moon.VelocityX)),
+                FindPlaneCycle(input.Select(s => new Moon(s)).ToArray(), moon => string.Join("+", moon.Y, moon.VelocityY)),
+                FindPlaneCycle(input.Select(s => new Moon(s)).ToArray(), moon => string.Join("+", moon.Z, moon.VelocityZ)));
 
-            var time = 0;
+            return LCF(cycles);
+        }
 
-            while (true)
+        private static Task<long> FindPlaneCycle(Moon[] moons, Func<Moon, string> selector)
+        {
+            return Task.Factory.StartNew(() =>
             {
-                UpdateGravityForMoons(moons);
-
-                foreach (var moon in moons)
+                var time = 0L;
+                var history = new HashSet<string>();
+                while (true)
                 {
-                    moon.ApplyVelocity();
-                }
+                    UpdateGravityForMoons(moons);
 
-                if (moons.All(moon => moon.HasBeenHereBefore()))
-                {
-                    return time;
-                }
+                    foreach (var moon in moons)
+                    {
+                        moon.ApplyVelocity();
+                    }
 
-                foreach (var moon in moons)
-                {
-                    moon.RecordPosition();
-                }
+                    var positions = string.Join(",", moons.Select(selector));
+                    if (history.Contains(positions))
+                    {
+                        return time;
+                    }
+                    history.Add(positions);
 
-                time += 1;
-            }
+                    time += 1;
+                }
+            });
         }
 
         private static void UpdateGravityForMoons(Moon[] moons)
@@ -145,6 +143,24 @@ namespace AOC.Solver
             moons[1].EvaluateGravity(moons[3]);
 
             moons[2].EvaluateGravity(moons[3]);
+        }
+
+        private static long GCD(long a, long b)
+        {
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+
+            return a == 0 ? b : a;
+        }
+
+        private static long LCF(params long[] args)
+        {
+            return args.Aggregate((a, b) => (a * b) / GCD(a, b));
         }
     }
 }
