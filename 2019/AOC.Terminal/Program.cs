@@ -23,7 +23,7 @@ namespace AOC.Terminal
                 Console.WriteLine("Game over");
             });
 
-            _ = Task.Factory.StartNew(() => OutputLoop(computer.Output));
+            _ = Task.Factory.StartNew(() => OutputLoop(computer.Output, joystick));
 
             while (true)
             {
@@ -41,18 +41,20 @@ namespace AOC.Terminal
             }
         }
 
-        private static void OutputLoop(BlockingCollection<long> output)
+        private static void OutputLoop(BlockingCollection<long> output, BlockingCollection<long> joystick)
         {
             var map = new Dictionary<(long x, long y), long>();
             var score = 0L;
 
             while (true)
             {
+                var paddlePos = -1L;
+                var ballPos = -1L;
                 var snapshot = output.ToArray();
 
                 if (snapshot.Length == 0 || snapshot.Length % 3 != 0)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                     continue;
                 }
 
@@ -71,6 +73,14 @@ namespace AOC.Terminal
                     else
                     {
                         map[(x, y)] = tile;
+                        if (tile == 4)
+                        {
+                            ballPos = x;
+                        }
+                        else if (tile == 3)
+                        {
+                            paddlePos = x;
+                        }
                     }
                 }
 
@@ -103,7 +113,9 @@ namespace AOC.Terminal
 
                 Console.WriteLine($"Score: {score}");
 
-                Thread.Sleep(100);
+                joystick.Add(paddlePos == ballPos ? 0 : paddlePos > ballPos ? -1 : 1);
+
+                Thread.Sleep(50);
             }
         }
 
