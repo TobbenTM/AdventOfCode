@@ -30,6 +30,8 @@ namespace AOC.Solver.IntcodeComputer
 
         public long GetValue(int address) => _ctx.Get(address);
 
+        public void SetValue(int address, long value) => _ctx.Assign(address, value);
+
         public Task<long> GetOutputAsync()
         {
             return Task.Factory.StartNew(() => Output.Take());
