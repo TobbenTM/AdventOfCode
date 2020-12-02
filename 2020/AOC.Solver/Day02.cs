@@ -33,7 +33,7 @@ namespace AOC.Solver
 
         private static bool IsValid2(int min, int max, char ch, string pass)
         {
-            return pass[min-1] == ch && pass[max-1] != ch || pass[min-1] != ch && pass[max-1] == ch;
+            return pass[min-1] == ch ^ pass[max-1] == ch;
         }
     }
 }
