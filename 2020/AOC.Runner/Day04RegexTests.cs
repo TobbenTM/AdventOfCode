@@ -3,19 +3,19 @@ using Xunit;
 
 namespace AOC.Runner
 {
-    public class Day04Tests
+    public class Day04RegexTests
     {
         [Fact]
         public void Part1()
         {
-            var result = Day04.SolvePart1(_input.Replace("\r\n", "\n"));
+            var result = Day04Regex.SolvePart1(_input.Replace("\r\n", "\n"));
             Assert.Equal(216, result);
         }
 
         [Fact]
         public void Part2()
         {
-            var result = Day04.SolvePart2(_input.Replace("\r\n", "\n"));
+            var result = Day04Regex.SolvePart2(_input.Replace("\r\n", "\n"));
             Assert.Equal(150, result);
         }
 
@@ -30,7 +30,7 @@ namespace AOC.Runner
         [InlineData("iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719", true)]
         public void IsValidPassport_WithExamplePassports_ShouldValidateValues(string passport, bool expectedValidity)
         {
-            Assert.Equal(expectedValidity, Day04.IsValidPassport(passport, validateValues: true));
+            Assert.Equal(expectedValidity, Day04Regex.valueValidationRe.IsMatch(passport));
         }
 
         private readonly string _input = @"hcl:5d90f0 cid:270 ecl:#66dc9c hgt:62cm byr:1945 pid:63201172 eyr:2026
