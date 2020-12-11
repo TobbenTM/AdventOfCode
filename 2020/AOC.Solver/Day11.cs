@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,11 +72,11 @@ namespace AOC.Solver
             {
                 for (var x = 0; x < seatMap[y].Length; x++)
                 {
-                    if (seatMap[y][x] == 'L' && NumberOfFreeLineOfSightSeats(seatMap, x, y) == 8)
+                    if (seatMap[y][x] == 'L' && HasLineOfSightSeats(seatMap, x, y, (_, free) => free == 8))
                     {
                         queuedChanges.Add((x, y, '#'));
                     }
-                    else if (seatMap[y][x] == '#' && NumberOfFreeLineOfSightSeats(seatMap, x, y) <= 3)
+                    else if (seatMap[y][x] == '#' && HasLineOfSightSeats(seatMap, x, y, (occupied, _) => occupied >= 5))
                     {
                         queuedChanges.Add((x, y, 'L'));
                     }
@@ -90,21 +91,20 @@ namespace AOC.Solver
             return queuedChanges.Any();
         }
 
-        private static int NumberOfFreeLineOfSightSeats(char[][] seatMap, int x, int y)
+        private static bool HasLineOfSightSeats(char[][] seatMap, int x, int y, Func<int, int, bool> predicate)
         {
-            var total = 0;
+            (int dx, int dy)[] directions = new[] { (0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1) };
+            var totalOccupied = 0;
+            var totalFree = 0;
 
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, 0, -1)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, -1, 0)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, 0, 1)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, 1, 0)) total += 1;
+            foreach (var (dx, dy) in directions)
+            {
+                if (SeatCanSeeOccupiedSeat(seatMap, x, y, dx, dy)) totalOccupied += 1;
+                else totalFree += 1;
+                if (predicate(totalOccupied, totalFree)) return true;
+            }
 
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, -1, -1)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, 1, -1)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, -1, 1)) total += 1;
-            if (!SeatCanSeeOccupiedSeat(seatMap, x, y, 1, 1)) total += 1;
-
-            return total;
+            return false;
         }
 
         private static bool SeatCanSeeOccupiedSeat(char[][] seatMap, int x, int y, int dx, int dy)
