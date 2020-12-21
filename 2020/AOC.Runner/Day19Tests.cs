@@ -12,12 +12,11 @@ namespace AOC.Runner
             Assert.Equal(160, result);
         }
 
-        [Fact(Skip = "Not working yet")]
+        [Fact]
         public void Part2()
         {
-            var replacementRules = new[] { "8: 42 | 42 8", "11: 42 31 | 42 11 31" };
-            var result = Day19.SolvePart2(_input, replacementRules);
-            Assert.Equal(-1, result);
+            var result = Day19.SolvePart2(_input);
+            Assert.Equal(357, result);
         }
 
         [Fact]
@@ -39,7 +38,7 @@ aaaabbb";
             Assert.Equal(2, result);
         }
 
-        [Theory(Skip = "Not working yet")]
+        [Theory]
         [InlineData("abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa", false)]
         [InlineData("bbabbbbaabaabba", true)]
         [InlineData("babbbbaabbbbbabbbbbbaabaaabaaa", true)]
@@ -90,8 +89,7 @@ aaaabbb";
 24: 14 1
 
 {message}";
-            var replacementRules = new[] { "8: 42 | 42 8", "11: 42 31 | 42 11 31" };
-            var resultP2 = Day19.SolvePart2(input, replacementRules);
+            var resultP2 = Day19.SolvePart2(input);
             Assert.Equal(expectedValidity ? 1 : 0, resultP2);
         }
 

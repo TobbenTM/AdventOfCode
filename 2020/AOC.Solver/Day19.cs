@@ -15,14 +15,14 @@ namespace AOC.Solver
                 .Split('\n')
                 .Select(line => new Rule(line))
                 .ToDictionary(r => r.Number, r => r);
+            var re = new Regex($"^{rules[0].ToRegex(rules)}$", RegexOptions.Multiline);
             return inputSections
                 .Last()
                 .Split('\n')
-                .Select(line => rules[0].IsValid(rules, line))
-                .Count(x => x.valid && x.next.Length == 0);
+                .Count(line => re.IsMatch(line));
         }
 
-        public static int SolvePart2(string input, string[] replacementRulesInput)
+        public static int SolvePart2(string input)
         {
             var inputSections = input.Split(new[] { "\n\n" }, StringSplitOptions.None);
             var rules = inputSections
@@ -30,17 +30,11 @@ namespace AOC.Solver
                 .Split('\n')
                 .Select(line => new Rule(line))
                 .ToDictionary(r => r.Number, r => r);
-            var replacementRules = replacementRulesInput
-                .Select(line => new Rule(line));
-            foreach (var rule in replacementRules)
-            {
-                rules[rule.Number] = rule;
-            }
+            var re = new Regex($"^({rules[42].ToRegex(rules)})+(?<Balance>{rules[42].ToRegex(rules)})+(?<-Balance>{rules[31].ToRegex(rules)})+(?(Balance)(?!))$", RegexOptions.Multiline);
             return inputSections
                 .Last()
                 .Split('\n')
-                .Select(line => rules[0].IsValid(rules, line))
-                .Count(x => x.valid && x.next.Length == 0);
+                .Count(line => re.IsMatch(line));
         }
 
         private class Rule
@@ -66,33 +60,18 @@ namespace AOC.Solver
                     : null;
             }
 
-            public (bool valid, string next) IsValid(Dictionary<int, Rule> rules, string input)
+            public string ToRegex(Dictionary<int, Rule> rules)
             {
-                if (input.Length == 0)
-                {
-                    return (false, input);
-                }
                 if (_matchingChar != null)
                 {
-                    return (input[0] == _matchingChar, input.Substring(1));
+                    return _matchingChar.ToString();
                 }
-                var a = IsValidChain(_sublistA!, rules, input);
-                if (!a.valid && _sublistB != null)
+                var re = $"{string.Join("", _sublistA.Select(r => rules[r].ToRegex(rules)))}";
+                if (_sublistB != null)
                 {
-                    return IsValidChain(_sublistB, rules, input);
+                    re = $"({re}|{string.Join("", _sublistB.Select(r => rules[r].ToRegex(rules)))})";
                 }
-                return a;
-            }
-
-            private (bool valid, string next) IsValidChain(int[] chain, Dictionary<int, Rule> rules, string input)
-            {
-                foreach (var ruleNum in chain)
-                {
-                    var result = rules[ruleNum].IsValid(rules, input);
-                    if (!result.valid) return (false, string.Empty);
-                    input = result.next;
-                }
-                return (true, input);
+                return re;
             }
         }
     }
