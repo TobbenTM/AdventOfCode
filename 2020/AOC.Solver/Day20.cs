@@ -22,19 +22,27 @@ namespace AOC.Solver
             var unMatchedImages = input.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(image => new Image(image))
                 .ToList();
+            foreach (var image in unMatchedImages)
+            {
+                image.FindAdjacentImages(unMatchedImages);
+            }
             var map = new Dictionary<(int x, int y), Image>();
-            var initialCorner = unMatchedImages.First(i => 2 == unMatchedImages.Count(j => i.MatchingEdge(j)));
+            var initialCorner = unMatchedImages.First(image => image.AdjacentImages.Count(i => i != null) == 2);
             map.Add((0, 0), initialCorner);
             unMatchedImages.Remove(initialCorner);
+
             throw new NotImplementedException("Part 2 not implemented yet!");
         }
 
         private class Image
         {
             public int Id { get; }
+            public ImageOrientation Orientation { get; set; } = ImageOrientation.None;
+            public Image[]? AdjacentImages => Transform(_adjacentImages, Orientation); 
 
             private readonly string[] _edges;
             private readonly string[] _data;
+            private Image[]? _adjacentImages;
 
             public Image(string input)
             {
@@ -57,6 +65,49 @@ namespace AOC.Solver
             {
                 return Id != other.Id && _edges.Any(edge => other._edges.Any(otherEdge => edge == otherEdge || edge == new string(otherEdge.Reverse().ToArray())));
             }
+
+            public void FindAdjacentImages(List<Image> images)
+            {
+                _adjacentImages = _edges
+                    .Select(edge => images.FirstOrDefault(i => i.Id != Id && i._edges.Any(e => e == edge || e == new string(edge.Reverse().ToArray()))))
+                    .ToArray();
+            }
+
+            private static Image[] Transform(Image[]? adjacentImages, ImageOrientation orientation)
+            {
+                if (adjacentImages == null) return new Image[0];
+                var copy = adjacentImages.ToArray();
+                if (orientation.HasFlag(ImageOrientation.HFlipped))
+                {
+                    var tmp = copy[1];
+                    copy[1] = copy[3];
+                    copy[3] = tmp;
+                }
+                if (orientation.HasFlag(ImageOrientation.VFlipped))
+                {
+                    var tmp = copy[0];
+                    copy[0] = copy[2];
+                    copy[2] = tmp;
+                }
+                if (orientation.HasFlag(ImageOrientation.Rotated))
+                {
+                    var tmp = copy[0];
+                    copy[0] = copy[1];
+                    copy[1] = copy[2];
+                    copy[2] = copy[3];
+                    copy[3] = tmp;
+                }
+                return copy;
+            }
+        }
+
+        [Flags]
+        private enum ImageOrientation
+        {
+            None = 0,
+            HFlipped = 1,
+            VFlipped = 2,
+            Rotated = 4,
         }
     }
 }
