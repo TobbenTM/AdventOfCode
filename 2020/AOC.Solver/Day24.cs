@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,37 +27,33 @@ namespace AOC.Solver
             var blackedTiles = ApplyDirections(tiles);
             for (var i = 0; i < 100; i++)
             {
-                var limits = blackedTiles.Aggregate((a, b) => (
-                    x: Math.Max(Math.Abs(a.x), Math.Abs(b.x)),
-                    y: Math.Max(Math.Abs(a.y), Math.Abs(b.y)),
-                    z: Math.Max(Math.Abs(a.z), Math.Abs(b.z))));
-                var newMap = new HashSet<(int x, int y, int z)>();
-                for (var x = -limits.x - 1; x <= limits.x + 1; x++)
+                var interestingTiles = new HashSet<(int x, int y, int z)>();
+                foreach (var tile in blackedTiles
+                    .SelectMany(t => neighborsDirections.Select(dir => (x: t.x + dir.x, y: t.y + dir.y, z: t.z + dir.z)))
+                    .Concat(blackedTiles))
                 {
-                    for (var y = -limits.y - 1; y <= limits.y + 1; y++)
+                    interestingTiles.Add(tile);
+                }
+                var newMap = new HashSet<(int x, int y, int z)>();
+                foreach (var (x, y, z) in interestingTiles)
+                {
+                    var neighbors = neighborsDirections.Count(dir => blackedTiles.Contains((x + dir.x, y + dir.y, z + dir.z)));
+                    if (blackedTiles.Contains((x, y, z)))
                     {
-                        for (var z = -limits.z - 1; z <= limits.z + 1; z++)
+                        if (neighbors > 0 && neighbors <= 2)
                         {
-                            var neighbors = neighborsDirections.Count(dir => blackedTiles.Contains((x + dir.x, y + dir.y, z + dir.z)));
-                            if (blackedTiles.Contains((x, y, z)))
-                            {
-                                if (neighbors > 0 && neighbors <= 2)
-                                {
-                                    newMap.Add((x, y, z));
-                                }
-                            }
-                            else
-                            {
-                                if (neighbors == 2)
-                                {
-                                    newMap.Add((x, y, z));
-                                }
-                            }
+                            newMap.Add((x, y, z));
+                        }
+                    }
+                    else
+                    {
+                        if (neighbors == 2)
+                        {
+                            newMap.Add((x, y, z));
                         }
                     }
                 }
                 blackedTiles = newMap;
-                Console.WriteLine($"Day {i + 1}: {blackedTiles.Count}");
             }
             return blackedTiles.Count;
         }

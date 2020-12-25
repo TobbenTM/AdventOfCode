@@ -12,7 +12,7 @@ namespace AOC.Runner
             Assert.Equal(479, result);
         }
 
-        [Fact(Skip = "Hella slow")]
+        [Fact]
         public void Part2()
         {
             var result = Day24.SolvePart2(_input);
@@ -49,7 +49,7 @@ namespace AOC.Runner
             Assert.Equal(10, result);
         }
 
-        [Fact(Skip = "Hella slow")]
+        [Fact]
         public void Part2_WithExampleData_ReturnsBlackedTiles()
         {
             var input = new[]
