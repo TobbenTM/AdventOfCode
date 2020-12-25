@@ -7,43 +7,65 @@ namespace AOC.Solver
     {
         public static int SolvePart1(string input)
         {
-            var cups = input.Select(c => int.Parse(c.ToString())).ToList();
-            PlayCrabCups(cups, 100);
-            var finalCups = cups.Skip(cups.IndexOf(1) + 1).Concat(cups.Take(cups.IndexOf(1)));
-            return int.Parse(string.Join("", finalCups));
+            var cups = input.Select(c => int.Parse(c.ToString())).ToArray();
+            var result = PlayCrabCups(cups, 100);
+            var currentCup = result[1];
+            return int.Parse(string.Join("", Enumerable.Range(0, cups.Length - 1).Select(_ => (currentCup = currentCup.Next).Value)));
         }
 
         public static long SolvePart2(string input)
         {
             var cups = input.Select(c => int.Parse(c.ToString()))
                 .Concat(Enumerable.Range(input.Length + 1, 1_000_000 - input.Length))
-                .ToList();
-            //PlayCrabCups(cups, 10_000);
-            var start = cups.IndexOf(1);
-            return (long)cups[(start + 1) % cups.Count] * cups[(start + 2) % cups.Count];
+                .ToArray();
+            var result = PlayCrabCups(cups, 10_000_000);
+            var start = result[1];
+            return (long)start.Next.Value * start.Next.Next.Value;
         }
 
-        private static void PlayCrabCups(List<int> cups, int iterations)
+        private static IDictionary<int, Cup> PlayCrabCups(int[] cups, int iterations)
         {
-            var currentCup = cups.First();
+            var map = cups.Select(i => new Cup(i)).ToDictionary(cup => cup.Value, cup => cup);
+            for (var i = 0; i < map.Count; i++)
+            {
+                map[cups[i]].Next = map[cups[(i + 1) % cups.Length]];
+            }
+            var currentCup = map.Values.First();
             for (var i = 0; i < iterations; i++)
             {
-                var start = (cups.IndexOf(currentCup) + 1) % cups.Count;
-                var pickedCups = cups.Skip(start).Take(3).ToList();
-                cups.RemoveRange(start, pickedCups.Count);
-                var missing = 3 - pickedCups.Count;
-                pickedCups.AddRange(cups.Take(missing));
-                cups.RemoveRange(0, missing);
-
-                var destinationCup = currentCup - 1;
-                while (!cups.Contains(destinationCup))
+                var picked = new[]
                 {
-                    destinationCup -= 1;
-                    if (destinationCup < 0) destinationCup += 10;
-                }
-                cups.InsertRange(cups.IndexOf(destinationCup) + 1, pickedCups);
+                    currentCup.Next,
+                    currentCup.Next.Next,
+                    currentCup.Next.Next.Next,
+                };
 
-                currentCup = cups[(cups.IndexOf(currentCup) + 1) % cups.Count];
+                var destinationValue = currentCup.Value - 1;
+                if (destinationValue == 0) destinationValue = cups.Max();
+                while (picked.Any(cup => cup.Value == destinationValue))
+                {
+                    destinationValue -= 1;
+                    if (destinationValue == 0) destinationValue = cups.Max();
+                }
+
+                var destinationCup = map[destinationValue];
+                currentCup.Next = picked.Last().Next;
+                picked.Last().Next = destinationCup.Next;
+                destinationCup.Next = picked.First();
+                currentCup = currentCup.Next;
+            }
+            return map;
+        }
+
+        private class Cup
+        {
+            public int Value { get; set; }
+
+            public Cup Next { get; set; } = default!;
+
+            public Cup(int value)
+            {
+                Value = value;
             }
         }
     }

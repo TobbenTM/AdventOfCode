@@ -16,7 +16,7 @@ namespace AOC.Runner
         public void Part2()
         {
             var result = Day23.SolvePart2(_input);
-            Assert.Equal(-1, result);
+            Assert.Equal(2029056128, result);
         }
 
         [Fact]
