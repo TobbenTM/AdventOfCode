@@ -1,0 +1,17 @@
+{
+  "name": "aoc-bootstrapper",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "generate": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.10",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}
