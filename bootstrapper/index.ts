@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import fsSync from 'fs'
 import path from 'path'
 import axios from 'axios'
+import open from 'open'
 
 (async () => {
     try {
@@ -19,10 +20,13 @@ import axios from 'axios'
             day = parseInt(process.argv[3])
         }
 
-        console.log(`🔍 Finding input for puzzle y${year} d${day}..`)
-        const url = `https://adventofcode.com/${year}/day/${day}/input`
+        const puzzleUrl = `https://adventofcode.com/${year}/day/${day}`
+        open(puzzleUrl)
 
-        var response = await axios.get(url, {
+        console.log(`🔍 Finding input for puzzle y${year} d${day}..`)
+        const inputUrl = `${puzzleUrl}/input`
+
+        var response = await axios.get(inputUrl, {
             headers: {
                 Cookie: `session=${token};`
             },
