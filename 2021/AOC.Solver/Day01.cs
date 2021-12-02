@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 
 namespace AOC.Solver
 {
@@ -9,7 +9,7 @@ namespace AOC.Solver
             var total = 0;
             for (var i = 1; i < input.Length; i++)
             {
-                if (input[i-1] < input[i]) total++;
+                if (input[i - 1] < input[i]) total++;
             }
             return total;
         }
@@ -19,7 +19,7 @@ namespace AOC.Solver
             var total = 0;
             for (var i = 3; i < input.Length; i++)
             {
-                if (input[i - 3] + input[i - 2] + input[i - 1] < input[i - 2] + input[i - 1] + input[i]) total++;
+                if (input[(i - 3)..i].Sum() < input[(i - 2)..(i + 1)].Sum()) total++;
             }
             return total;
         }
