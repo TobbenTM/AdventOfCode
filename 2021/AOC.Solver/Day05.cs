@@ -13,20 +13,8 @@ namespace AOC.Solver
                 .Select(line => new Line(line))
                 .Where(line => line.IsStraightLine)
                 .SelectMany(line => line.TouchesCells)
-                .Aggregate(new Dictionary<(int x, int y), int>(), (agg, cur) =>
-                {
-                    if (agg.ContainsKey(cur))
-                    {
-                        agg[cur]++;
-                    }
-                    else
-                    {
-                        agg.Add(cur, 1);
-                    }
-
-                    return agg;
-                })
-                .Count(kv => kv.Value > 1);
+                .GroupBy(point => point)
+                .Count(group => group.Count() > 1);
         }
 
         public static int SolvePart2(string[] input)
@@ -34,20 +22,8 @@ namespace AOC.Solver
             return input
                 .Select(line => new Line(line))
                 .SelectMany(line => line.TouchesCells)
-                .Aggregate(new Dictionary<(int x, int y), int>(), (agg, cur) =>
-                {
-                    if (agg.ContainsKey(cur))
-                    {
-                        agg[cur]++;
-                    }
-                    else
-                    {
-                        agg.Add(cur, 1);
-                    }
-
-                    return agg;
-                })
-                .Count(kv => kv.Value > 1);
+                .GroupBy(point => point)
+                .Count(group => group.Count() > 1);
         }
 
         private class Line
