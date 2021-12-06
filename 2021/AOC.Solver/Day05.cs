@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -28,28 +27,28 @@ namespace AOC.Solver
 
         private class Line
         {
-            public (int x, int y) From { get; }
-            public (int x, int y) To { get; }
+            private readonly (int x, int y) _from;
+            private readonly (int x, int y) _to;
 
-            public bool IsStraightLine => From.x == To.x || From.y == To.y;
+            public bool IsStraightLine => _from.x == _to.x || _from.y == _to.y;
 
             public IEnumerable<(int x, int y)> TouchesCells
             {
                 get
                 {
-                    var current = (x: From.x, y: From.y);
+                    var current = (x: _from.x, y: _from.y);
                     yield return current;
 
-                    while (current != To)
+                    while (current != _to)
                     {
-                        if (current.x != To.x)
+                        if (current.x != _to.x)
                         {
-                            current.x += current.x < To.x ? 1 : -1;
+                            current.x += current.x < _to.x ? 1 : -1;
                         }
 
-                        if (current.y != To.y)
+                        if (current.y != _to.y)
                         {
-                            current.y += current.y < To.y ? 1 : -1;
+                            current.y += current.y < _to.y ? 1 : -1;
                         }
 
                         yield return current;
@@ -60,8 +59,8 @@ namespace AOC.Solver
             public Line(string input)
             {
                 var match = new Regex("(\\d+),(\\d+) -> (\\d+),(\\d+)").Match(input);
-                From = (x: int.Parse(match.Groups[1].Value), y: int.Parse(match.Groups[2].Value));
-                To = (x: int.Parse(match.Groups[3].Value), y: int.Parse(match.Groups[4].Value));
+                _from = (x: int.Parse(match.Groups[1].Value), y: int.Parse(match.Groups[2].Value));
+                _to = (x: int.Parse(match.Groups[3].Value), y: int.Parse(match.Groups[4].Value));
             }
         }
     }
