@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import fsSync from 'fs'
 import path from 'path'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import open from 'open'
 
 (async () => {
@@ -26,7 +26,7 @@ import open from 'open'
         console.log(`🔍 Finding input for puzzle y${year} d${day}..`)
         const inputUrl = `${puzzleUrl}/input`
 
-        var response = await axios.get(inputUrl, {
+        const response = await axios.get(inputUrl, {
             headers: {
                 Cookie: `session=${token};`
             },
@@ -68,6 +68,11 @@ import open from 'open'
         console.log('✏️ Wrote templates to solution!')
     } catch (e) {
         console.error('❌ Error occured during program execution:', (e as Error).message)
+
+        const axiosError = e as AxiosError;
+        if (axiosError.response) {
+            console.error(`👉 Could not download input! Status: ${axiosError.response?.status}, body: ${axiosError.response?.data || 'n/a'}`)
+        }
     }
 })();
 
