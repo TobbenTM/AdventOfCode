@@ -3,35 +3,34 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace AOC.Runner
+namespace AOC.Runner;
+
+public class Day{{day}}Tests
 {
-    public class Day{{day}}Tests
+    private readonly int[] _input;
+
+    public Day{{day}}Tests()
     {
-        private readonly int[] _input;
+        var lines = File.ReadAllLines("./Day{{day}}.input");
+        _input = lines
+            .Where(line => line.Length > 0)
+            .Single()
+            .Split("\t")
+            .Select(num => int.Parse(num))
+            .ToArray();
+    }
 
-        public Day{{day}}Tests()
-        {
-            var lines = File.ReadAllLines("./Day{{day}}.input");
-            _input = lines
-                .Where(line => line.Length > 0)
-                .Single()
-                .Split("\t")
-                .Select(num => int.Parse(num))
-                .ToArray();
-        }
+    [Fact]
+    public void Part1()
+    {
+        var result = Day{{day}}.SolvePart1(_input);
+        Assert.Equal(-1, result);
+    }
 
-        [Fact]
-        public void Part1()
-        {
-            var result = Day{{day}}.SolvePart1(_input);
-            Assert.Equal(-1, result);
-        }
-
-        [Fact]
-        public void Part2()
-        {
-            var result = Day{{day}}.SolvePart2(_input);
-            Assert.Equal(-1, result);
-        }
+    [Fact]
+    public void Part2()
+    {
+        var result = Day{{day}}.SolvePart2(_input);
+        Assert.Equal(-1, result);
     }
 }

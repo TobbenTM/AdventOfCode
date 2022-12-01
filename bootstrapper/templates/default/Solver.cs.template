@@ -1,17 +1,16 @@
 using System;
 
-namespace AOC.Solver
-{
-    public static class Day{{day}}
-    {
-        public static int SolvePart1(string[] input)
-        {
-            throw new NotImplementedException("Part 1 not implemented yet!");
-        }
+namespace AOC.Solver;
 
-        public static int SolvePart2(string[] input)
-        {
-            throw new NotImplementedException("Part 2 not implemented yet!");
-        }
+public static class Day{{day}}
+{
+    public static int SolvePart1(string[] input)
+    {
+        throw new NotImplementedException("Part 1 not implemented yet!");
+    }
+
+    public static int SolvePart2(string[] input)
+    {
+        throw new NotImplementedException("Part 2 not implemented yet!");
     }
 }
