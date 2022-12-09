@@ -43,7 +43,7 @@ R 2";
     public void Part2()
     {
         var result = Day09.SolvePart2(_input);
-        Assert.Equal(-1, result);
+        Assert.Equal(2658, result);
     }
 
     [Fact]
