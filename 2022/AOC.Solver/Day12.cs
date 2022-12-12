@@ -6,7 +6,7 @@ namespace AOC.Solver;
 
 public static class Day12
 {
-    private static readonly (int deltaRow, int deltaCol)[] Neighbours =
+    private static readonly (int deltaRow, int deltaCol)[] _neighbours =
     {
         (-1, 0),
         (0, -1),
@@ -26,12 +26,12 @@ public static class Day12
         }
         foreach (var kv in nodes)
         {
-            foreach (var neighbourDiff in Neighbours)
+            foreach (var neighbourDiff in _neighbours)
             {
                 if (nodes.TryGetValue((kv.Key.row + neighbourDiff.deltaRow, kv.Key.col + neighbourDiff.deltaCol), out var neighbour))
                 {
                     var heightDiff = neighbour.Height - kv.Value.Height;
-                    if (heightDiff is 0 or 1
+                    if ((heightDiff is <= 1 && neighbour.Height != 'E')
                         || (neighbour.Height == 'E' && kv.Value.Height == 'z')
                         || (kv.Value.Height == 'S' && neighbour.Height == 'a'))
                     {
@@ -41,17 +41,44 @@ public static class Day12
             }
         }
 
-        return AStar(nodes.Values.ToArray());
+        var start = nodes.Values.Single(n => n.Height == 'S');
+
+        return AStar(nodes.Values.ToArray(), start);
     }
 
     public static int SolvePart2(string[] input)
     {
-        throw new NotImplementedException("Part 2 not implemented yet!");
+        var nodes = new Dictionary<(int row, int col), Node>();
+        for (var row = 0; row < input.Length; row++)
+        {
+            for (var col = 0; col < input[row].Length; col++)
+            {
+                nodes.Add((row, col), new Node { Height = input[row][col] == 'S' ? 'a' : input[row][col], Position = (row, col) });
+            }
+        }
+        foreach (var kv in nodes)
+        {
+            foreach (var neighbourDiff in _neighbours)
+            {
+                if (nodes.TryGetValue((kv.Key.row + neighbourDiff.deltaRow, kv.Key.col + neighbourDiff.deltaCol), out var neighbour))
+                {
+                    var heightDiff = neighbour.Height - kv.Value.Height;
+                    if ((heightDiff is <= 1 && neighbour.Height != 'E')
+                        || (neighbour.Height == 'E' && kv.Value.Height == 'z')
+                        || (kv.Value.Height == 'S' && neighbour.Height == 'a'))
+                    {
+                        kv.Value.Neighbours.Add(neighbour);
+                    }
+                }
+            }
+        }
+
+        var nodeList = nodes.Values.ToArray();
+        return nodeList.Where(n => n.Height == 'a').Select(n => AStar(nodeList, n)).Where(d => d > 0).Min();
     }
 
-    private static int AStar(Node[] nodes)
+    private static int AStar(Node[] nodes, Node start)
     {
-        var start = nodes.Single(n => n.Height == 'S');
         var end = nodes.Single(n => n.Height == 'E');
 
         start.Distance = 0;

@@ -21,7 +21,7 @@ public class Day12Tests
     public void Part1()
     {
         var result = Day12.SolvePart1(_input);
-        Assert.Equal(-1, result);
+        Assert.Equal(447, result);
     }
 
     [Fact]
@@ -40,6 +40,6 @@ abdefghi";
     public void Part2()
     {
         var result = Day12.SolvePart2(_input);
-        Assert.Equal(-1, result);
+        Assert.Equal(446, result);
     }
 }
