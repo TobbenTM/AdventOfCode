@@ -5,13 +5,13 @@ using Xunit;
 
 namespace AOC.Runner;
 
-public class Day02Tests
+public class Day03Tests
 {
     private readonly string[] _input;
 
-    public Day02Tests()
+    public Day03Tests()
     {
-        var lines = File.ReadAllLines("./Day02.input");
+        var lines = File.ReadAllLines("./Day03.input");
         _input = lines
             .Where(line => line.Length > 0)
             .ToArray();
@@ -20,14 +20,14 @@ public class Day02Tests
     [Fact]
     public void Part1()
     {
-        var result = Day02.SolvePart1(_input);
-        Assert.Equal(2447, result);
+        var result = Day03.SolvePart1(_input);
+        Assert.Equal(529618, result);
     }
 
     [Fact]
     public void Part2()
     {
-        var result = Day02.SolvePart2(_input);
-        Assert.Equal(56322, result);
+        var result = Day03.SolvePart2(_input);
+        Assert.Equal(77509019, result);
     }
 }
