@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using AOC.Solver.Tools;
 
 namespace AOC.Solver;
 
@@ -8,23 +8,14 @@ public static class Day14
 {
     public static int SolvePart1(string[] input)
     {
-        var map = input.Select(line => line.ToCharArray()).ToArray();
+        var map = new Map(input);
 
-        for (var x = 0; x < map[0].Length; x++)
+        foreach (var column in map.Columns)
         {
-            for (var y = 1; y < map.Length; y++)
+            foreach (var (value, rowIndex, colIndex) in column.Skip(1))
             {
-                if (map[y][x] is '.' or '#') continue;
-
-                var maxY = y;
-                for (var dy = y - 1; dy >= 0; dy--)
-                    if (map[dy][x] == '.')
-                        maxY = dy;
-                    else
-                        break;
-
-                map[y][x] = '.';
-                map[maxY][x] = 'O';
+                if (value is '.' or '#') continue;
+                map.SwapNeighbourWhile(rowIndex, colIndex, Neighbour.North, ch => ch == '.');
             }
         }
 
@@ -33,86 +24,50 @@ public static class Day14
 
     public static int SolvePart2(string[] input)
     {
-        var map = input.Select(line => line.ToCharArray()).ToArray();
+        var map = new Map(input);
         var history = new List<int>();
         var seeded = false;
-        var seedSize = 150;
+        var seedSize = 1000;
 
         while (true)
         {
             // North
-            for (var x = 0; x < map[0].Length; x++)
+            foreach (var column in map.Columns)
             {
-                for (var y = 1; y < map.Length; y++)
+                foreach (var (value, rowIndex, colIndex) in column.Skip(1))
                 {
-                    if (map[y][x] is '.' or '#') continue;
-
-                    var maxY = y;
-                    for (var dy = y - 1; dy >= 0; dy--)
-                        if (map[dy][x] == '.')
-                            maxY = dy;
-                        else
-                            break;
-
-                    map[y][x] = '.';
-                    map[maxY][x] = 'O';
+                    if (value is '.' or '#') continue;
+                    map.SwapNeighbourWhile(rowIndex, colIndex, Neighbour.North, ch => ch == '.');
                 }
             }
 
             // West
-            for (var y = 0; y < map.Length; y++)
+            foreach (var row in map.Rows)
             {
-                for (var x = 1; x < map[0].Length; x++)
+                foreach (var (value, rowIndex, colIndex) in row.Skip(1))
                 {
-                    if (map[y][x] is '.' or '#') continue;
-
-                    var maxX = x;
-                    for (var dx = x - 1; dx >= 0; dx--)
-                        if (map[y][dx] == '.')
-                            maxX = dx;
-                        else
-                            break;
-
-                    map[y][x] = '.';
-                    map[y][maxX] = 'O';
+                    if (value is '.' or '#') continue;
+                    map.SwapNeighbourWhile(rowIndex, colIndex, Neighbour.West, ch => ch == '.');
                 }
             }
 
             // South
-            for (var x = 0; x < map[0].Length; x++)
+            foreach (var column in map.Columns)
             {
-                for (var y = map.Length - 2; y >= 0; y--)
+                foreach (var (value, rowIndex, colIndex) in column.Reverse().Skip(1))
                 {
-                    if (map[y][x] is '.' or '#') continue;
-
-                    var minY = y;
-                    for (var dy = y + 1; dy < map.Length; dy++)
-                        if (map[dy][x] == '.')
-                            minY = dy;
-                        else
-                            break;
-
-                    map[y][x] = '.';
-                    map[minY][x] = 'O';
+                    if (value is '.' or '#') continue;
+                    map.SwapNeighbourWhile(rowIndex, colIndex, Neighbour.South, ch => ch == '.');
                 }
             }
 
             // East
-            for (var y = 0; y < map.Length; y++)
+            foreach (var row in map.Rows)
             {
-                for (var x = map[0].Length - 2; x >= 0; x--)
+                foreach (var (value, rowIndex, colIndex) in row.Reverse().Skip(1))
                 {
-                    if (map[y][x] is '.' or '#') continue;
-
-                    var minX = x;
-                    for (var dx = x + 1; dx < map[0].Length; dx++)
-                        if (map[y][dx] == '.')
-                            minX = dx;
-                        else
-                            break;
-
-                    map[y][x] = '.';
-                    map[y][minX] = 'O';
+                    if (value is '.' or '#') continue;
+                    map.SwapNeighbourWhile(rowIndex, colIndex, Neighbour.East, ch => ch == '.');
                 }
             }
 
@@ -133,21 +88,21 @@ public static class Day14
                         .Skip(cycleSize)))
             {
                 var offset = (1_000_000_000 - seedSize) % cycleSize;
-                return history[cycleSize - offset];
+                return history[cycleSize - offset - 1];
             }
         }
     }
 
-    private static int FindLoad(char[][] map)
+    private static int FindLoad(Map map)
     {
         var result = 0;
 
-        for (var y = 0; y < map.Length; y++)
+        for (var y = 0; y < map.Height; y++)
         {
-            for (var x = 0; x < map[y].Length; x++)
+            for (var x = 0; x < map.Width; x++)
             {
-                if (map[y][x] != 'O') continue;
-                result += map.Length - y;
+                if (map[y, x] != 'O') continue;
+                result += map.Height - y;
             }
         }
 
