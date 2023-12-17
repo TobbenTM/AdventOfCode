@@ -40,6 +40,8 @@ public static class Day12
         {
             if (row.Count(c => c is '?' or '#') < groups.Sum()) return 0;
             if (row.Count(c => c is '#') > groups.Sum()) return 0;
+            var start = row.Split('?').First().Split('.', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Length).ToArray();
+            if (!start.Take(start.Length - 1).SequenceEqual(groups.Take(start.Length - 1))) return 0;
 
             var index = row.IndexOf('?');
             var a = new StringBuilder(row)
@@ -47,6 +49,7 @@ public static class Day12
                 [index] = '.'
             };
             var aTask = Task.Run(() => NumberOfValidPermutations(a.ToString(), groups));
+
             var b = new StringBuilder(row)
             {
                 [index] = '#'
