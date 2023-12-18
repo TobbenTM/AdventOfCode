@@ -33,7 +33,15 @@ public record Neighbour(int DeltaY, int DeltaX)
     public T? Apply<T>(T[][] map, (int y, int x) value) where T : struct
         => Apply(map, value.y, value.x);
 
-    public (int y, int x) Apply(int y, int x) => (y + DeltaY, x + DeltaX);
+    public (int y, int x) Apply(int y, int x, int times = 1) => (y + DeltaY * times, x + DeltaX * times);
 
-    public (int y, int x) Apply((int y, int x) value) => Apply(value.y, value.x);
+    public (long y, long x) Apply(long y, long x, long times = 1) => (y + DeltaY * times, x + DeltaX * times);
+
+    public (float y, float x) Apply(float y, float x, float times = 1f) => (y + DeltaY * times, x + DeltaX * times);
+
+    public (int y, int x) Apply((int y, int x) value, int times = 1) => Apply(value.y, value.x, times);
+
+    public (long y, long x) Apply((long y, long x) value, long times = 1) => Apply(value.y, value.x, times);
+
+    public (float y, float x) Apply((float y, float x) value, float times = 1f) => Apply(value.y, value.x, times);
 }
