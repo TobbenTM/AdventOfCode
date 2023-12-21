@@ -28,6 +28,14 @@ public class Map
         set => _map[row][column] = value;
     }
 
+    public char this[(int row, int column) pos]
+    {
+        get => _map[pos.row][pos.column];
+        set => _map[pos.row][pos.column] = value;
+    }
+
+    public (char Value, int Row, int Column) First(char value) => Rows.SelectMany(r => r).First(x => x.Value == value);
+
     public IEnumerable<(char Value, int Row, int Column)[]> Rows => _map
         .Select((row, ri) => row.Select((val, vi) => (val, ri, vi)).ToArray());
 
