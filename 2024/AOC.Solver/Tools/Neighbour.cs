@@ -1,21 +1,36 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AOC.Solver.Tools;
 
 public record Neighbour(int DeltaY, int DeltaX)
 {
     public static Neighbour North = new(-1, 0);
+    public static Neighbour NorthWest = new(-1, -1);
+    public static Neighbour NorthEast = new(-1, 1);
     public static Neighbour South = new(1, 0);
+    public static Neighbour SouthWest = new(1, -1);
+    public static Neighbour SouthEast = new(1, 1);
     public static Neighbour West = new(0, -1);
     public static Neighbour East = new(0, 1);
 
-    public static Neighbour[] Orthogonal = new[]
-    {
+    public static Neighbour[] Orthogonal =
+    [
         North,
         South,
         West,
-        East,
-    };
+        East
+    ];
+
+    public static Neighbour[] Diagonal =
+    [
+        NorthWest,
+        NorthEast,
+        SouthWest,
+        SouthEast
+    ];
+
+    public static Neighbour[] All = Diagonal.Concat(Orthogonal).ToArray();
 
     public static Neighbour From((int y, int x) a, (int y, int x) b) => new(a.y - b.y, a.x - b.x);
 
@@ -28,6 +43,24 @@ public record Neighbour(int DeltaY, int DeltaX)
         x += DeltaX;
         if (y < 0 || y >= map.Length || x < 0 || x >= map[y].Length) return null;
         return map[y][x];
+    }
+
+    public T?[] Apply<T>(T[][] map, int y, int x, int times) where T : struct
+    {
+        var result = new List<T?>();
+        for (var i = 0; i < times; i++)
+        {
+            y += DeltaY;
+            x += DeltaX;
+            if (y < 0 || y >= map.Length || x < 0 || x >= map[y].Length)
+            {
+                result.Add(null);
+                continue;
+            }
+            result.Add(map[y][x]);
+        }
+
+        return result.ToArray();
     }
 
     public T? Apply<T>(T[][] map, (int y, int x) value) where T : struct
