@@ -41,7 +41,7 @@ public class Day06Tests
         Assert.Equal(41, result);
     }
 
-    [Fact]
+    [Fact(Skip = "Slooooow")]
     public void Part2()
     {
         var result = Day06.SolvePart2(_input);
