@@ -4,6 +4,14 @@ using System.Linq;
 
 namespace AOC.Solver.Tools;
 
+public static class PositionExtensions
+{
+    public static (int row, int col) Subtract(this (int row, int col) position, (int rowDiff, int colDiff) diff) =>
+        (position.row - diff.rowDiff, position.col - diff.colDiff);
+    public static (int row, int col) Add(this (int row, int col) position, (int rowDiff, int colDiff) diff) =>
+        (position.row + diff.rowDiff, position.col + diff.colDiff);
+}
+
 public class MapV2
 {
     public class Entity(char value, int row, int col)
@@ -11,6 +19,8 @@ public class MapV2
         public char Value { get; set; } = value;
         public int Row { get; set; } = row;
         public int Col { get; set; } = col;
+
+        public (int row, int col) Position => (Row, Col);
 
         public List<(int, int)> History { get; init; } = [(row, col)];
 
@@ -37,6 +47,13 @@ public class MapV2
             }
 
             return result;
+        }
+
+        public (int rowDiff, int colDiff) Distance(Entity other)
+        {
+            var rowDiff = Row - other.Row;
+            var colDiff = Col - other.Col;
+            return (rowDiff, colDiff);
         }
     }
 
