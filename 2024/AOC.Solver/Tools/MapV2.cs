@@ -70,6 +70,16 @@ public class MapV2
 
     public int Width => _map[0].Length;
 
+    public Entity this[(int row, int col) position]
+    {
+        get
+        {
+            if (position.row < 0 || position.row > Height - 1 || position.col < 0 || position.col > Width - 1) throw new OutOfBoundsException();
+            return _map[position.row][position.col];
+        }
+        set => _map[position.row][position.col] = value;
+    }
+
     public Entity this[int row, int column]
     {
         get => _map[row][column];
