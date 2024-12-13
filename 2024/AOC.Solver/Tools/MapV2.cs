@@ -8,8 +8,24 @@ public static class PositionExtensions
 {
     public static (int row, int col) Subtract(this (int row, int col) position, (int rowDiff, int colDiff) diff) =>
         (position.row - diff.rowDiff, position.col - diff.colDiff);
+
     public static (int row, int col) Add(this (int row, int col) position, (int rowDiff, int colDiff) diff) =>
         (position.row + diff.rowDiff, position.col + diff.colDiff);
+
+    public static (int row, int col) Multiply(this (int row, int col) position, int times) =>
+        (position.row * times, position.col * times);
+
+    public static (long row, long col) Multiply(this (int row, int col) position, long times) =>
+        (position.row * times, position.col * times);
+
+    public static (long row, long col) Subtract(this (long row, long col) position, (long rowDiff, long colDiff) diff) =>
+        (position.row - diff.rowDiff, position.col - diff.colDiff);
+
+    public static (long row, long col) Add(this (long row, long col) position, (long rowDiff, long colDiff) diff) =>
+        (position.row + diff.rowDiff, position.col + diff.colDiff);
+
+    public static (long row, long col) Multiply(this (long row, long col) position, long times) =>
+        (position.row * times, position.col * times);
 }
 
 public class MapV2
