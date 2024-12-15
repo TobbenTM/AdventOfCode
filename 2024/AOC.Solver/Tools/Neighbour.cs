@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AOC.Solver.Tools;
@@ -33,6 +34,30 @@ public record Neighbour(int DeltaY, int DeltaX)
     public static Neighbour[] All = Diagonal.Concat(Orthogonal).ToArray();
 
     public static Neighbour From((int y, int x) a, (int y, int x) b) => new(a.y - b.y, a.x - b.x);
+
+    public static Neighbour Parse(char @char) => @char switch
+    {
+        'N' => North,
+        'W' => West,
+        'E' => East,
+        'S' => South,
+
+        '^' => North,
+        '<' => West,
+        '>' => East,
+        'v' => South,
+        'V' => South,
+        _ => throw new ArgumentOutOfRangeException(nameof(@char), @char, null)
+    };
+
+    public override string ToString() => this switch
+    {
+        _ when this == North => "North",
+        _ when this == West => "West",
+        _ when this == East => "East",
+        _ when this == South => "South",
+        _ => throw new ArgumentOutOfRangeException()
+    };
 
     public static T[] FindOrthogonalValues<T>(T[][] map, int y, int x) where T : struct
         => Orthogonal.Select(n => n.Apply(map, y, x)).OfType<T>().ToArray();

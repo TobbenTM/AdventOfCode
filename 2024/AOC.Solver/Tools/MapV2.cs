@@ -76,7 +76,7 @@ public class MapV2
     private readonly Entity[][] _map;
     public Dictionary<char, Entity[]> Entities { get; init; }
 
-    public MapV2(string[] input)
+    public MapV2(IEnumerable<string> input)
     {
         _map = input.Select((line, row) => line.ToCharArray().Select((c, col) => new Entity(c, row, col)).ToArray()).ToArray();
         Entities = _map.SelectMany(r => r).GroupBy(e => e.Value).ToDictionary(g => g.Key, g => g.ToArray());
@@ -107,6 +107,18 @@ public class MapV2
     public IEnumerable<Entity[]> Columns => Enumerable.Range(0, Width)
         .Select(col => _map.Select(row => row[col]).ToArray());
 
+    public void Swap(Entity entity, Neighbour direction) =>
+        Swap(entity.Row, entity.Col, direction);
+
+    public void Swap(int rowIndex, int colIndex, Neighbour direction)
+    {
+        var (row, col) = direction.Apply(rowIndex, colIndex);
+        if (row < 0 || row > Height - 1 || col < 0 || col > Width - 1) throw new OutOfBoundsException();
+
+        (_map[rowIndex][colIndex], _map[row][col]) = (_map[row][col], _map[rowIndex][colIndex]);
+        _map[rowIndex][colIndex].Swapped(_map[row][col]);
+    }
+
     public int SwapNeighbourWhile(Entity entity, Neighbour direction, Func<Entity, bool> predicate) =>
         SwapNeighbourWhile(entity.Row, entity.Col, direction, predicate);
 
@@ -131,7 +143,7 @@ public class MapV2
         var result = "";
         foreach (var row in Rows)
         {
-            result += row.Aggregate(result, (current, entity) => current + entity.Value);
+            result = row.Aggregate(result, (current, entity) => current + entity.Value);
             result += "\n";
         }
 
