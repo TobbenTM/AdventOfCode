@@ -18,10 +18,10 @@ public static class Day06
         {
             while (true)
             {
-                map.SwapNeighbourWhile(guard, Neighbour.North, e => e.Value == '.');
-                map.SwapNeighbourWhile(guard, Neighbour.East, e => e.Value == '.');
-                map.SwapNeighbourWhile(guard, Neighbour.South, e => e.Value == '.');
-                map.SwapNeighbourWhile(guard, Neighbour.West, e => e.Value == '.');
+                map.SwapNeighbourWhile(guard, Direction.North, e => e.Value == '.');
+                map.SwapNeighbourWhile(guard, Direction.East, e => e.Value == '.');
+                map.SwapNeighbourWhile(guard, Direction.South, e => e.Value == '.');
+                map.SwapNeighbourWhile(guard, Direction.West, e => e.Value == '.');
                 var tail = guard.History.TakeLast(2).ToArray();
                 if (guard.History.Select((pos, i) => (pos, i)).SkipLast(2).Any(t => t.i > 0 && t.pos == tail.Last() && guard.History[t.i-1] == tail.First()))
                 {
@@ -29,7 +29,7 @@ public static class Day06
                 }
             }
         }
-        catch (MapV2.OutOfBoundsException)
+        catch (OutOfBoundsException)
         {
             return guard;
         }

@@ -36,6 +36,10 @@ public class MapV2
         public int Row { get; set; } = row;
         public int Col { get; set; } = col;
 
+        public Direction? Direction { get; set; }
+
+        public long Score { get; set; }
+
         public (int row, int col) Position => (Row, Col);
 
         public List<(int, int)> History { get; init; } = [(row, col)];
@@ -107,10 +111,10 @@ public class MapV2
     public IEnumerable<Entity[]> Columns => Enumerable.Range(0, Width)
         .Select(col => _map.Select(row => row[col]).ToArray());
 
-    public void Swap(Entity entity, Neighbour direction) =>
+    public void Swap(Entity entity, Direction direction) =>
         Swap(entity.Row, entity.Col, direction);
 
-    public void Swap(int rowIndex, int colIndex, Neighbour direction)
+    public void Swap(int rowIndex, int colIndex, Direction direction)
     {
         var (row, col) = direction.Apply(rowIndex, colIndex);
         if (row < 0 || row > Height - 1 || col < 0 || col > Width - 1) throw new OutOfBoundsException();
@@ -119,10 +123,10 @@ public class MapV2
         _map[rowIndex][colIndex].Swapped(_map[row][col]);
     }
 
-    public int SwapNeighbourWhile(Entity entity, Neighbour direction, Func<Entity, bool> predicate) =>
+    public int SwapNeighbourWhile(Entity entity, Direction direction, Func<Entity, bool> predicate) =>
         SwapNeighbourWhile(entity.Row, entity.Col, direction, predicate);
 
-    public int SwapNeighbourWhile(int rowIndex, int colIndex, Neighbour direction, Func<Entity, bool> predicate)
+    public int SwapNeighbourWhile(int rowIndex, int colIndex, Direction direction, Func<Entity, bool> predicate)
     {
         var swaps = 0;
         while (true)
@@ -149,6 +153,4 @@ public class MapV2
 
         return result;
     }
-
-    public class OutOfBoundsException : Exception;
 }

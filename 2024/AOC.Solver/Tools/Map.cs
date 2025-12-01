@@ -34,7 +34,7 @@ public class Map
     public IEnumerable<(char Value, int Row, int Column)[]> Columns => Enumerable.Range(0, Width)
         .Select(col => _map.Select((row, ri) => (row[col], ri, col)).ToArray());
 
-    public int SwapNeighbourWhile(int rowIndex, int colIndex, Neighbour direction, Func<char, bool> predicate)
+    public int SwapNeighbourWhile(int rowIndex, int colIndex, Direction direction, Func<char, bool> predicate)
     {
         var swaps = 0;
         while (true)

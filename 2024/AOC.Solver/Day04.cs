@@ -14,7 +14,7 @@ public static class Day04
             for (var col = 0; col < map[row].Length; col++)
             {
                 if (map[row][col] is not 'X') continue;
-                result += Neighbour.All
+                result += Direction.All
                     .Select(dir => dir.Apply(map, row, col, 3))
                     .Count(word => word.SequenceEqual(['M', 'A', 'S']));
             }
@@ -32,8 +32,8 @@ public static class Day04
             for (var col = 0; col < map[row].Length; col++)
             {
                 if (map[row][col] is not 'A') continue;
-                var a = Neighbour.NorthEast.Apply(map, row + 2, col - 2, 3);
-                var b = Neighbour.NorthWest.Apply(map, row + 2, col + 2, 3);
+                var a = Direction.NorthEast.Apply(map, row + 2, col - 2, 3);
+                var b = Direction.NorthWest.Apply(map, row + 2, col + 2, 3);
                 if ((a.SequenceEqual(['M', 'A', 'S']) || a.Reverse().SequenceEqual(['M', 'A', 'S'])) &&
                     (b.SequenceEqual(['M', 'A', 'S']) || b.Reverse().SequenceEqual(['M', 'A', 'S'])))
                     result++;

@@ -16,14 +16,14 @@ public static class Day10
     private static IEnumerable<MapV2.Entity> WalkTrail(MapV2.Entity current, MapV2 map)
     {
         if (current.Value == '9') yield return current;
-        foreach (var direction in Neighbour.Orthogonal)
+        foreach (var direction in Direction.Orthogonal)
         {
             MapV2.Entity neighour;
             try
             {
                 neighour = map[direction.Apply(current.Position)];
             }
-            catch (MapV2.OutOfBoundsException)
+            catch (OutOfBoundsException)
             {
                 continue;
             }

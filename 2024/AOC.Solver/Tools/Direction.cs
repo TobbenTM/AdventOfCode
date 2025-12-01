@@ -4,18 +4,18 @@ using System.Linq;
 
 namespace AOC.Solver.Tools;
 
-public record Neighbour(int DeltaY, int DeltaX)
+public record Direction(int DeltaY, int DeltaX)
 {
-    public static Neighbour North = new(-1, 0);
-    public static Neighbour NorthWest = new(-1, -1);
-    public static Neighbour NorthEast = new(-1, 1);
-    public static Neighbour South = new(1, 0);
-    public static Neighbour SouthWest = new(1, -1);
-    public static Neighbour SouthEast = new(1, 1);
-    public static Neighbour West = new(0, -1);
-    public static Neighbour East = new(0, 1);
+    public static Direction North = new(-1, 0);
+    public static Direction NorthWest = new(-1, -1);
+    public static Direction NorthEast = new(-1, 1);
+    public static Direction South = new(1, 0);
+    public static Direction SouthWest = new(1, -1);
+    public static Direction SouthEast = new(1, 1);
+    public static Direction West = new(0, -1);
+    public static Direction East = new(0, 1);
 
-    public static Neighbour[] Orthogonal =
+    public static Direction[] Orthogonal =
     [
         North,
         South,
@@ -23,7 +23,7 @@ public record Neighbour(int DeltaY, int DeltaX)
         East
     ];
 
-    public static Neighbour[] Diagonal =
+    public static Direction[] Diagonal =
     [
         NorthWest,
         NorthEast,
@@ -31,11 +31,11 @@ public record Neighbour(int DeltaY, int DeltaX)
         SouthEast
     ];
 
-    public static Neighbour[] All = Diagonal.Concat(Orthogonal).ToArray();
+    public static Direction[] All = Diagonal.Concat(Orthogonal).ToArray();
 
-    public static Neighbour From((int y, int x) a, (int y, int x) b) => new(a.y - b.y, a.x - b.x);
+    public static Direction From((int y, int x) a, (int y, int x) b) => new(a.y - b.y, a.x - b.x);
 
-    public static Neighbour Parse(char @char) => @char switch
+    public static Direction Parse(char @char) => @char switch
     {
         'N' => North,
         'W' => West,

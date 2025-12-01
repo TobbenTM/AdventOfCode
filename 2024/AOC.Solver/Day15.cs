@@ -10,7 +10,7 @@ public static class Day15
     public static int SolvePart1(string[] input)
     {
         var map = new MapV2(input.TakeWhile(l => l.Length > 0));
-        var directions = input.SkipWhile(l => l.Length > 0).Skip(1).SelectMany(l => l.Select(Neighbour.Parse)).ToArray();
+        var directions = input.SkipWhile(l => l.Length > 0).Skip(1).SelectMany(l => l.Select(Direction.Parse)).ToArray();
 
         var robot = map.Entities['@'].Single();
         foreach (var direction in directions)
@@ -51,7 +51,7 @@ public static class Day15
             '@' => "@.",
             _ => throw new ArgumentOutOfRangeException(nameof(ch), ch, null)
         }))));
-        var directions = input.SkipWhile(l => l.Length > 0).Skip(1).SelectMany(l => l.Select(Neighbour.Parse)).ToArray();
+        var directions = input.SkipWhile(l => l.Length > 0).Skip(1).SelectMany(l => l.Select(Direction.Parse)).ToArray();
 
         var robot = map.Entities['@'].Single();
         foreach (var direction in directions)
@@ -76,36 +76,36 @@ public static class Day15
                     if (batch.Any(b => b.Position == neighbourPosition)) continue;
                     if (map[neighbourPosition].Value == '[')
                     {
-                        if (direction == Neighbour.East)
+                        if (direction == Direction.East)
                         {
                             // We need to push the western one first
                             neighboursToShift.Push(map[neighbourPosition]);
-                            neighboursToShift.Push(map[Neighbour.East.Apply(neighbourPosition)]);
+                            neighboursToShift.Push(map[Direction.East.Apply(neighbourPosition)]);
                         }
                         else
                         {
-                            neighboursToShift.Push(map[Neighbour.East.Apply(neighbourPosition)]);
+                            neighboursToShift.Push(map[Direction.East.Apply(neighbourPosition)]);
                             neighboursToShift.Push(map[neighbourPosition]);
                         }
-                        if (direction == Neighbour.West || direction == Neighbour.East)
+                        if (direction == Direction.West || direction == Direction.East)
                             batch.AddRange(neighboursToShift.Take(1));
                         else
                             batch.AddRange(neighboursToShift.Take(2));
                     }
                     else if (map[neighbourPosition].Value == ']')
                     {
-                        if (direction == Neighbour.West)
+                        if (direction == Direction.West)
                         {
                             // We need to push the eastern one first
                             neighboursToShift.Push(map[neighbourPosition]);
-                            neighboursToShift.Push(map[Neighbour.West.Apply(neighbourPosition)]);
+                            neighboursToShift.Push(map[Direction.West.Apply(neighbourPosition)]);
                         }
                         else
                         {
-                            neighboursToShift.Push(map[Neighbour.West.Apply(neighbourPosition)]);
+                            neighboursToShift.Push(map[Direction.West.Apply(neighbourPosition)]);
                             neighboursToShift.Push(map[neighbourPosition]);
                         }
-                        if (direction == Neighbour.West || direction == Neighbour.East)
+                        if (direction == Direction.West || direction == Direction.East)
                             batch.AddRange(neighboursToShift.Take(1));
                         else
                             batch.AddRange(neighboursToShift.Take(2));

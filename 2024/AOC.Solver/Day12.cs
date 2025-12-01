@@ -20,7 +20,7 @@ public static class Day12
             var perimeter = 0;
             while (toDiscover.TryDequeue(out var regionEntity))
             {
-                foreach (var dir in Neighbour.Orthogonal)
+                foreach (var dir in Direction.Orthogonal)
                 {
                     try
                     {
@@ -35,7 +35,7 @@ public static class Day12
                         region.Add(neighbour);
                         toDiscover.Enqueue(neighbour);
                     }
-                    catch (MapV2.OutOfBoundsException)
+                    catch (OutOfBoundsException)
                     {
                         perimeter++;
                     }
@@ -60,7 +60,7 @@ public static class Day12
             var sides = new HashSet<(float x, float y, bool vertical)>();
             while (toDiscover.TryDequeue(out var regionEntity))
             {
-                foreach (var dir in Neighbour.Orthogonal)
+                foreach (var dir in Direction.Orthogonal)
                 {
                     var pos = dir.Apply(regionEntity.Position);
                     var fencePos = dir.Apply(regionEntity.Position, 0.1f);
@@ -78,7 +78,7 @@ public static class Day12
                         region.Add(neighbour);
                         toDiscover.Enqueue(neighbour);
                     }
-                    catch (MapV2.OutOfBoundsException)
+                    catch (OutOfBoundsException)
                     {
                         sides.Add((fencePos.x, fencePos.y, vertical));
                     }
