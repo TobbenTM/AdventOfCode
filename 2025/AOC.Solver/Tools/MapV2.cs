@@ -78,12 +78,13 @@ public class MapV2
     }
 
     private readonly Entity[][] _map;
-    public Dictionary<char, Entity[]> Entities { get; init; }
+
+    public Dictionary<char, Entity[]> Entities =>
+        _map.SelectMany(r => r).GroupBy(e => e.Value).ToDictionary(g => g.Key, g => g.ToArray());
 
     public MapV2(IEnumerable<string> input)
     {
         _map = input.Select((line, row) => line.ToCharArray().Select((c, col) => new Entity(c, row, col)).ToArray()).ToArray();
-        Entities = _map.SelectMany(r => r).GroupBy(e => e.Value).ToDictionary(g => g.Key, g => g.ToArray());
     }
 
     public int Height => _map.Length;
@@ -106,10 +107,20 @@ public class MapV2
         set => _map[row][column] = value;
     }
 
+    public Entity? TryGet((int row, int col) position)
+    {
+        if (position.row < 0 || position.row > Height - 1 || position.col < 0 || position.col > Width - 1) return null;
+        return _map[position.row][position.col];
+    }
+
+
     public IEnumerable<Entity[]> Rows => _map.Select(row => row);
 
     public IEnumerable<Entity[]> Columns => Enumerable.Range(0, Width)
         .Select(col => _map.Select(row => row[col]).ToArray());
+
+    public IEnumerable<Entity> Neighbours((int row, int col) position, Direction[] directions) =>
+        directions.Select(d => TryGet(d.Apply(position))).OfType<Entity>();
 
     public void Swap(Entity entity, Direction direction) =>
         Swap(entity.Row, entity.Col, direction);
