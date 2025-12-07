@@ -119,6 +119,9 @@ public class MapV2
     public IEnumerable<Entity[]> Columns => Enumerable.Range(0, Width)
         .Select(col => _map.Select(row => row[col]).ToArray());
 
+    public Entity? Neighbour((int row, int col) position, Direction direction) =>
+        TryGet(direction.Apply(position));
+
     public IEnumerable<Entity> Neighbours((int row, int col) position, Direction[] directions) =>
         directions.Select(d => TryGet(d.Apply(position))).OfType<Entity>();
 
